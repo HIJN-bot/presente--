@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Asistencia con Código QR</title>
+    <link rel="stylesheet" href="css/pages/index.css">
+    <link rel="shortcut icon" href="resources/img/Attendance System.png" type="image/x-icon">
+</head>
+
+<body>
+    <span class="titulo-presente">Presente</span>
+
+    <main>
+        <h2>Bienvenido al Sistema de Asistencia</h2>
+
+        <form id="form" method="post">
+            <div class="role">
+                <label><input type="radio" name="role" id="teacher_radio" value="teacher" onchange="checkRadio()"
+                        required> Profesor</label>
+                <label><input type="radio" name="role" id="student_radio" value="student" onchange="checkRadio()"
+                        required> Estudiante</label>
+            </div>
+
+            <div class="input_area">
+                <input type="email" placeholder="Ingresa tu correo" name="email" required>
+            </div>
+
+            <div class="input_area">
+                <input type="password" placeholder="Ingresa tu contraseña" name="password" required>
+            </div>
+
+            <button class="button_submit">Iniciar Sesión</button>
+
+            <div class="msg">
+                ¿Eres nuevo estudiante? <a href="register.php">Regístrate aquí</a>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        function checkRadio() {
+            let form = document.getElementById("form");
+
+            if (document.getElementById("teacher_radio").checked) {
+                form.setAttribute("action", "teacher/index.php");
+            }
+
+            if (document.getElementById("student_radio").checked) {
+                form.setAttribute("action", "student/index.php");
+            }
+        }
+    </script>
+</body>
+
+</html>
