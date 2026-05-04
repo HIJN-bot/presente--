@@ -1,0 +1,18 @@
+/* ======== Estilos Generales ======== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #4b0d3a, #b91372);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #eee;
+    position: relative;
+    overflow: hidden;
+}
