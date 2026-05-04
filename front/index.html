@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Asistencia con Código QR</title>
+    <link rel="stylesheet" href="css/base/styles.css">
     <link rel="stylesheet" href="css/pages/index.css">
     <link rel="shortcut icon" href="resources/img/Attendance System.png" type="image/x-icon">
 </head>
@@ -39,19 +40,8 @@
         </form>
     </main>
 
-    <script>
-        function checkRadio() {
-            let form = document.getElementById("form");
-
-            if (document.getElementById("teacher_radio").checked) {
-                form.setAttribute("action", "teacher/index.php");
-            }
-
-            if (document.getElementById("student_radio").checked) {
-                form.setAttribute("action", "student/index.php");
-            }
-        }
-    </script>
+    <!--Llamando los scripts de JavaScript-->
+    <script src="js/utils/preferences.js"></script>
 </body>
 
 </html>
