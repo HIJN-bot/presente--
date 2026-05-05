@@ -11,5 +11,6 @@ Thumbs.db
 *.py[cod]
 *$py.class
 .venv
+*.pyc
 venv/
 ENV/
