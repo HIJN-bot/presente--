@@ -3,7 +3,12 @@ from sqlalchemy import create_engine
 #Importamos de SQLAlchemy la funcion que nos permite crear las sesiones
 #Tambien importamos la clase de la que van a heredar los modelos 
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
+#Importamos la funcoin que nos permite cargar las variables de entorno  
+from dotenv import load_dotenv
 import os
+
+#Cargamos el .env
+load_dotenv()
 
 #Asignamos la direccion de la base de datos
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://usuario:contrasena@localhost:5432/a_db")
