@@ -2,11 +2,10 @@
 from pydantic import BaseModel
 #Importamos de Pydantic EmailStr para validar si el correo ingresado es valido
 from pydantic import EmailStr
+#Importamos el modelo Pydantic base Usuario
+import usuario_schema as us
 
 #Clase para guardar los datos del estudiante
-class EstudianteCreado(BaseModel):
-    nombre: str
-    apellido: str
-    email: EmailStr
-    contrasena: str
+class EstudianteCreado(BaseModel, us.UsuarioCreado):
+    pass
 
