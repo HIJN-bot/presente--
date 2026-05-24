@@ -62,7 +62,7 @@ async def logear_estudiante(
             email=informacion_estudiante.email,
         )
 
-        #Retornamos el schema de respuesta del usuario creado
+        # Retornamos el schema de respuesta del usuario creado
         return estudiante_logeado
 
     except Exception:
