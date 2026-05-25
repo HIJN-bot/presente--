@@ -11,6 +11,7 @@ from sqlalchemy import pool
 
 from alembic import context
 from app.models import estudiante_model
+from app.models import docente_model
 
 #Ejecutamos la carga del .env para disponer de las variables en memoria
 load_dotenv()
