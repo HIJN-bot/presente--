@@ -2,7 +2,7 @@
 from pydantic import BaseModel
 
 # Importamos el esquema base de validacion con Pydantic del usuario
-from app.schemas import usuario_schema as us
+from app.schemas.usuarios import usuario_schema as us
 
 
 class DocenteCreado(us.UsuarioCreado):

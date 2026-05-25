@@ -1,5 +1,5 @@
 # Importamos el schema del estudiante de Pydantic
-from app.schemas import usuario_schema as us
+from app.schemas.usuarios import usuario_schema as us
 
 
 def crear_usuario(usuario: us.UsuarioCreado) -> dict:

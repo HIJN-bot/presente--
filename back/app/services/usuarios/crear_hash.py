@@ -1,8 +1,8 @@
 # Importamos el schema del usuario de Pydantic
-from app.schemas import usuario_schema as us
+from app.schemas.usuarios import usuario_schema as us
 
 # Importamos la funcion para hashear la contraseña
-from app.services.auth_service import generar_hash
+from app.services.usuarios.auth_service import generar_hash
 
 
 def hashear_contrasena(usuario: us.UsuarioCreado):

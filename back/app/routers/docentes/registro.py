@@ -2,13 +2,13 @@
 from fastapi import APIRouter, HTTPException, Depends
 
 # Importamos el schema de docente
-from app.schemas import docente_schema as ds
+from app.schemas.usuarios import docente_schema as ds
 
 # Importamos el schema de respuesta
-from app.schemas import respuesta_schema as rs
+from app.schemas.usuarios import respuesta_schema as rs
 
 # Importamos el modelo de docente
-from app.models import docente_model as dm
+from app.models.usuarios import docente_model as dm
 
 # Importamos de SQLAlchemy las sesiones para la comunicacion con la Base de Datos
 from sqlalchemy.orm import Session
@@ -17,11 +17,11 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 
 # Importamos los servicios de autentificacion, crear hash, crear usuario, validar email y crear la respuesta
-from app.services.auth_service import generar_hash
-from app.services.crear_hash import hashear_contrasena
-from app.services.validar_email import validar_email
-from app.services.crear_usuario import crear_usuario
-from app.services.respuesta_usuario import crear_respuesta
+from app.services.usuarios.auth_service import generar_hash
+from app.services.usuarios.crear_hash import hashear_contrasena
+from app.services.usuarios.validar_email import validar_email
+from app.services.usuarios.crear_usuario import crear_usuario
+from app.services.usuarios.respuesta_usuario import crear_respuesta
 
 # Instanciamos el router para crear el endpoint de la API
 router: APIRouter = APIRouter()

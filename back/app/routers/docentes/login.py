@@ -2,12 +2,12 @@
 from fastapi import APIRouter, HTTPException, Depends
 
 # Importamos el schema estudiante y modelo
-from app.schemas import docente_schema as ds
-from app.models import docente_model as dm
+from app.schemas.usuarios import docente_schema as ds
+from app.models.usuarios import docente_model as dm
 
 # Imprtamos la funcion de verificar el hash, obtener la Base de datos y crear el schema para la respuesta
-from app.services.auth_service import verificar_hash
-from app.services.respuesta_usuario import crear_respuesta
+from app.services.usuarios.auth_service import verificar_hash
+from app.services.usuarios.respuesta_usuario import crear_respuesta
 from app.database import get_db
 
 # Importamos de SQLAlchemy la funcion select

@@ -6,7 +6,7 @@ from sqlalchemy import Column, String, Integer
 from app.database import Base
 
 # Importamos el modelo base de usuario
-import app.models.usuario_model as um
+import app.models.usuarios.usuario_model as um
 
 
 # Definimos la clase como esqueleto de la tabla

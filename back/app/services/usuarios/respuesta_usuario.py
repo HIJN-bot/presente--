@@ -1,5 +1,5 @@
 # Importamos el schema de respuesta
-from app.schemas import respuesta_schema as rs
+from app.schemas.usuarios import respuesta_schema as rs
 
 
 # Definimos la funcion que nos permita crear el schema de respuesta

@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 # Importamos el modelo ORM del usuario
-from app.models import usuario_model as um
+from app.models.usuarios import usuario_model as um
 
 
 # Definimos la funcion para validar que el email que estamos registrando no este en la Base de Datos

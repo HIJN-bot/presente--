@@ -5,7 +5,7 @@ from sqlalchemy import Column, String, Integer
 from app.database import Base
 
 # Importamos la clase Base del usuario
-from app.models import usuario_model as um
+from app.models.usuarios import usuario_model as um
 
 
 # Definimos la clase del modelo de docente como esqueleto de la tabla
