@@ -2,10 +2,13 @@
 from fastapi import FastAPI
 
 # Importamos el router de registro de estudiantes
-from app.routers.estudiantes import registro
+from app.routers.estudiantes import registro as registro_estudiantes
 
 # Importamos el router de login de estudiantes
 from app.routers.estudiantes import login
+
+# Importamos el router de registro de docentes
+from app.routers.docentes import registro as registro_docentes
 
 # instanciamos la aplicacion de FastAPI
 app: FastAPI = FastAPI(
@@ -13,8 +16,10 @@ app: FastAPI = FastAPI(
 )
 
 # Montamos los routers de estudiantes en la aplicacion
-app.include_router(registro.router, prefix="/api", tags=["estudiantes"])
+app.include_router(registro_estudiantes.router, prefix="/api", tags=["estudiantes"])
 app.include_router(login.router, prefix="/api", tags=["estudiantes"])
+# Montamos los routers de los docentes en la aplicacion
+app.include_router(registro_docentes.router, prefix="/api", tags=["docentes"])
 
 
 # Funcion principal de la aplicacion
