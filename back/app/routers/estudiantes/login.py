@@ -26,21 +26,19 @@ async def logear_estudiante(
     informacion_estudiante: es.EstudianteCreado, db: Session = Depends(get_db)
 ):
     """
-    Definimos la funcion del endpoint, que sera la encargada de validar el inicio de sesion: 
+    Definimos la funcion del endpoint, que sera la encargada de validar el inicio de sesion:
     - Recibimos los datos del estudiante, iniciamos una sesion en la base de datos
     - para realizar una consulta y obtener el usuario y la contraseña para comparar que sean los mismos,
     - Retornamos el estado de esta operacion
     """
     try:
-        # Abrimos la sesion de la base de datos
-        with Session(db) as session:
-            # Definimos la query con los parametros de la consulta que queremos realizar
-            query = select(em.Estudiante).where(
-                em.Estudiante.email == informacion_estudiante.email
-            )
-            # Ejecutamos la consulta
-            estudiante_db: em.Estudiante = session.execute(query).scalar_one_or_none()
-            # Verificamos que el email ingresado este en la base de datos
+        # Definimos la query con los parametros de la consulta que queremos realizar
+        query = select(em.Estudiante).where(
+            em.Estudiante.email == informacion_estudiante.email
+        )
+        # Ejecutamos la consulta
+        estudiante_db: em.Estudiante = db.execute(query).scalar_one_or_none()
+        # Verificamos que el email ingresado este en la base de datos
         if estudiante_db is None:
             raise HTTPException(
                 status_code=404,
@@ -54,9 +52,9 @@ async def logear_estudiante(
 
         # Creamos el schema de repuesta
         estudiante_logeado = crear_respuesta(
-            nombre=informacion_estudiante.nombre,
-            apellido=informacion_estudiante.apellido,
-            email=informacion_estudiante.email,
+            nombre=estudiante_db.nombre,
+            apellido=estudiante_db.apellido,
+            email=estudiante_db.email,
         )
 
         # Retornamos el schema de respuesta del usuario creado

@@ -15,13 +15,12 @@ from app.models import usuario_model as um
 def validar_email(
     email_ingresado: EmailStr, modelo_usuario: um.Usuario, db: Session
 ) -> bool:
-    with Session(db) as session:
-        # Definimos la query con el parametro del email y buscando coincidencias
-        query = select(modelo_usuario).where(modelo_usuario.email == email_ingresado)
-        # Ejecutamos la consulta a la base de datos
-        email_consultado = session.execute(query).scalar_one_or_none()
-        # Evaluamos si la consulta encontro algo
-        if email_consultado is not None:
-            return False
-        # Si no dio nada, significa que el email no esta registrado y podemos proceder con el registro
-        return True
+    # Definimos la query con el parametro del email y buscando coincidencias
+    query = select(modelo_usuario).where(modelo_usuario.email == email_ingresado)
+    # Ejecutamos la consulta a la base de datos
+    email_consultado = db.execute(query).scalar_one_or_none()
+    # Evaluamos si la consulta encontro algo
+    if email_consultado is not None:
+        return False
+    # Si no dio nada, significa que el email no esta registrado y podemos proceder con el registro
+    return True

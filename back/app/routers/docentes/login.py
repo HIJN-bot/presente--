@@ -33,14 +33,12 @@ async def logear_docente(
     - Retornamos el estado de la operacion y los datos importantes del docente para el cliente
     """
     try:
-        # Abrimos la sesion con la base de datos
-        with db as session:
             # Definimos la query con los parametros de la consulta que queremos realizar
             query = select(dm.Docente).where(
                 dm.Docente.email == informacion_docente.email
             )
             # Ejecutamos la consulta
-            docente_db: dm.Docente = session.execute(query).scalar_one_or_none()
+            docente_db: dm.Docente = db.execute(query).scalar_one_or_none()
             # Verificamos que el usuario con ese email registrado exista en la Base de Datos
             if docente_db is None:
                 raise HTTPException(
@@ -54,9 +52,9 @@ async def logear_docente(
                 raise HTTPException(status_code=400, detail="Contraseña incorrecta")
             # Creamos el schema de respuesta
             docente_logeado = crear_respuesta(
-                nombre=informacion_docente.nombre,
-                apellido=informacion_docente.apellido,
-                email=informacion_docente.email,
+                nombre=docente_db.nombre,
+                apellido=docente_db.apellido,
+                email=docente_db.email,
             )
             # Retornamos al cliente los datos necesarios del docente
             return docente_logeado
