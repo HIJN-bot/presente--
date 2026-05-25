@@ -5,5 +5,5 @@ from pydantic import BaseModel
 from app.schemas import usuario_schema as us
 
 
-class DocenteCreado(BaseModel, us):
+class DocenteCreado(us.UsuarioCreado):
     pass

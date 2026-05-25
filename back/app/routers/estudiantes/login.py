@@ -22,17 +22,14 @@ router: APIRouter = APIRouter()
 
 # Definimos el endpoint y su metodo HTTP
 @router.post("/estudiantes/login", status_code=200)
-
-
-# Definimos la funcion del endpoint, que sera la encargada de validar el inicio de sesion
-# Recibimos para ello un objeto estudiante
 async def logear_estudiante(
     informacion_estudiante: es.EstudianteCreado, db: Session = Depends(get_db)
 ):
     """
-    Recibimos los datos del estudiante, iniciamos una sesion en la base de datos
-    para realizar una consulta y obtener el usuario y la contraseña para comparar que sean los mismos,
-    Retornamos el estado de esta operacion
+    Definimos la funcion del endpoint, que sera la encargada de validar el inicio de sesion: 
+    - Recibimos los datos del estudiante, iniciamos una sesion en la base de datos
+    - para realizar una consulta y obtener el usuario y la contraseña para comparar que sean los mismos,
+    - Retornamos el estado de esta operacion
     """
     try:
         # Abrimos la sesion de la base de datos

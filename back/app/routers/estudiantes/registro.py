@@ -28,15 +28,13 @@ router: APIRouter = APIRouter()
 
 # Definimos el metodo HTTP para nuestra API
 @router.post("/estudiantes/registro", status_code=201)
-
-# Definimos la funcion del Endpoint, y solicitamos el estudiante creado
-# Ademas pedimos la base de datos para usar las sesiones y registrar a los usuarios
 async def registrar_estudiante(
     informacion_estudiante: es.EstudianteCreado, db: Session = Depends(get_db)
 ):
     """
-    Recibimos los datos del estudiante, hasheamos la contraseña,
-    creamos la instancia del ORM y la guardamos en la Base de Datos
+    Definimos la funcion del Endpoint para registrar estudiantes: 
+    - Recibimos los datos del estudiante, hasheamos la contraseña,
+    - creamos la instancia del ORM y la guardamos en la Base de Datos
     """
     try:
         # Hasheamos la contraseña y modificamos el atributo

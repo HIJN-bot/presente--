@@ -6,10 +6,10 @@ from sqlalchemy import Column, String, Integer
 from app.database import Base
 
 # Importamos el modelo base de usuario
-import usuario_model as um
+import app.models.usuario_model as um
 
 
 # Definimos la clase como esqueleto de la tabla
-class Estudiante(Base, um.Usuario):
+class Estudiante(um.Usuario):
     __tablename__ = "estudiantes"
     id = Column(Integer, primary_key=True, index=True)
