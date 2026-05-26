@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Base, relationship
 
 # Importamos de SQLALchemy las columnas, y los tipos de datos necesarios para crear la tabla
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
 
 
 # Creamos la clase que representa la tabla de las clases que podra generar el docente
@@ -21,4 +21,4 @@ class Clase(Base):
     # Coleccion de estudiantes, referenciamos al modelo del estudiante
     estudiantes = relationship("Estudiante", back_populates="clase")
     # QR de la clase
-    qr = Column(String, nullable=False)
+    qr = Column(Text, nullable=False)
