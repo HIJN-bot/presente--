@@ -34,7 +34,11 @@ router: APIRouter = APIRouter()
 
 # Definimos el endpoint, el metodo HTTP y el status code de retorno
 @router.post("/clases/creacion", status_code=201)
-async def crear_clase(informacion_clase: ClaseCreada, informacion_docente: DocenteCreado, db: Session = Depends(get_db)):
+async def crear_clase(
+    informacion_clase: ClaseCreada,
+    informacion_docente: DocenteCreado,
+    db: Session = Depends(get_db),
+):
     """
     Esta funcion del endpoint se encarga de crear una clase y registrarla en la base de datos:
     - Instanciamos el ManagerClase
@@ -60,30 +64,35 @@ async def crear_clase(informacion_clase: ClaseCreada, informacion_docente: Docen
         clase = Clase(
             materia=datos_clase.materia,
             horario=datos_clase.horario,
-            docente_id=getattr(datos_clase, 'docente_id', None),  # Usamos getattr por si el campo no existe
-            qr=datos_clase.qr.qr_image if hasattr(datos_clase.qr, 'qr_image') else datos_clase.qr
+            docente_id=getattr(
+                datos_clase, "docente_id", None
+            ),  # Usamos getattr por si el campo no existe
+            qr=(
+                datos_clase.qr.qr_image
+                if hasattr(datos_clase.qr, "qr_image")
+                else datos_clase.qr
+            ),
         )
-        #Creamos la consulta para obtener el docente de la base de datos
+        # Creamos la consulta para obtener el docente de la base de datos
         query = select(Docente).where(Docente.email == informacion_docente.email)
-        #Iniciamos la consulta
+        # Iniciamos la consulta
         docente_db: Docente = db.execute(query).scalar_one_or_none()
-        #Revisamos si se encontro el docente
+        # Revisamos si se encontro el docente
         if docente_db is None:
             raise HTTPException(status_code=404, detail="Docente no encontrado")
-        #Añadimos al docente de la base de datos la clase que acabamos de crear
+        # Añadimos al docente de la base de datos la clase que acabamos de crear
         docente_db.clases.append(clase)
         # Añadimos la clase a los cambios para la base de datos
         db.add(clase)
-        #Añadimos el docente a los cambios para la base de datos
+        # Añadimos el docente a los cambios para la base de datos
         db.add(docente_db)
         # Comprometemos los cambios en la base de datos
         db.commit()
         # Refrescamos despues del commit
         db.refresh(clase)
-        #Refrescamos despues del commit 
+        # Refrescamos despues del commit
         db.refresh(docente_db)
         # Retornamos la instancia de la clase creada (puedes  retornar el modelo o un schema de respuesta)
         return clase
     except Exception:
         raise HTTPException(status_code=400, detail="Error al intentar crear la clase")
-
