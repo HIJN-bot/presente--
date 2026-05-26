@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro — Presente</title>
+  <link rel="stylesheet" href="../css/base/styles.css" />
+  <style>
+    .auth-bg {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-lg);
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .auth-header {
+      margin-bottom: var(--space-xl);
+    }
+
+    .auth-logo {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--p-text-primary);
+      letter-spacing: -0.02em;
+      margin-bottom: var(--space-xs);
+    }
+
+    .auth-logo span { color: var(--p-blue); }
+
+    .auth-subtitle {
+      font-size: 14px;
+      color: var(--p-text-muted);
+    }
+
+    .name-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-sm);
+    }
+
+    .form-footer {
+      margin-top: var(--space-lg);
+      text-align: center;
+      font-size: 13px;
+      color: var(--p-text-muted);
+    }
+
+    .form-footer a {
+      color: var(--p-blue);
+      font-weight: 500;
+    }
+
+    @media (max-width: 400px) {
+      .name-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="auth-bg">
+    <div class="auth-card card">
+
+      <div class="auth-header">
+        <p class="auth-logo">Pre<span>sente</span></p>
+        <p class="auth-subtitle" id="subtitle">Crea tu cuenta de estudiante.</p>
+      </div>
+
+      <!-- Toggle de rol -->
+      <div class="role-toggle" role="group" aria-label="Tipo de usuario">
+        <button class="role-toggle-btn active" data-role="student" type="button">Estudiante</button>
+        <button class="role-toggle-btn" data-role="teacher" type="button">Docente</button>
+      </div>
+
+      <!-- Alerta de error -->
+      <div id="register-error" class="alert alert-error hidden" role="alert"></div>
+
+      <!-- Formulario -->
+      <form id="register-form" novalidate>
+
+        <div class="name-row">
+          <div class="form-group">
+            <label class="form-label" for="name">Nombre</label>
+            <input
+              class="form-input"
+              type="text"
+              id="name"
+              name="name"
+              placeholder="María"
+              autocomplete="given-name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="last_name">Apellido</label>
+            <input
+              class="form-input"
+              type="text"
+              id="last_name"
+              name="last_name"
+              placeholder="Rodríguez"
+              autocomplete="family-name"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Correo electrónico</label>
+          <input
+            class="form-input"
+            type="email"
+            id="email"
+            name="email"
+            placeholder="correo@universidad.edu"
+            autocomplete="email"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Contraseña</label>
+          <input
+            class="form-input"
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Mínimo 8 caracteres"
+            autocomplete="new-password"
+            minlength="8"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password_confirm">Confirmar contraseña</label>
+          <input
+            class="form-input"
+            type="password"
+            id="password_confirm"
+            name="password_confirm"
+            placeholder="Repite la contraseña"
+            autocomplete="new-password"
+            required
+          />
+        </div>
+
+        <button
+          class="btn btn-primary btn-full btn-lg"
+          type="submit"
+          id="submit-btn"
+          data-label="Crear cuenta"
+        >
+          Crear cuenta
+        </button>
+
+      </form>
+
+      <p class="form-footer">
+        ¿Ya tienes cuenta?
+        <a href="/pages/login.html" id="login-link">Inicia sesión</a>
+      </p>
+
+    </div>
+  </main>
+
+  <script src="../js/auth.js"></script>
+  <script>
+    // Si ya hay sesión, redirigir al dashboard
+    if (Auth.isLoggedIn()) Auth.redirectToDashboard();
+
+    const form       = document.getElementById('register-form');
+    const errorEl    = document.getElementById('register-error');
+    const submitBtn  = document.getElementById('submit-btn');
+    const subtitle   = document.getElementById('subtitle');
+    const loginLink  = document.getElementById('login-link');
+    const toggleBtns = document.querySelectorAll('.role-toggle-btn');
+
+    let currentRole = 'student';
+
+    const subtitles = {
+      student: 'Crea tu cuenta de estudiante.',
+      teacher: 'Crea tu cuenta de docente.',
+    };
+
+    // ── Toggle de rol ──────────────────────────────────
+    toggleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        toggleBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentRole = btn.dataset.role;
+        subtitle.textContent = subtitles[currentRole];
+
+        // Sincronizar enlace de login con rol
+        const redirect = Auth.getRedirectParam();
+        const base = `/login.html?role=${currentRole}`;
+        loginLink.href = redirect ? `${base}&redirect=${encodeURIComponent(redirect)}` : base;
+
+        hideError();
+      });
+    });
+
+    // ── Prellenar rol desde URL ────────────────────────
+    const urlParams = new URLSearchParams(window.location.search);
+    const roleParam = urlParams.get('role');
+    if (roleParam === 'teacher' || roleParam === 'student') {
+      toggleBtns.forEach(b => {
+        b.classList.toggle('active', b.dataset.role === roleParam);
+      });
+      currentRole = roleParam;
+      subtitle.textContent = subtitles[currentRole];
+    }
+
+    // ── Inicializar enlace de login ────────────────────
+    const redirect = Auth.getRedirectParam();
+    loginLink.href = redirect
+      ? `/login.html?role=${currentRole}&redirect=${encodeURIComponent(redirect)}`
+      : `/login.html?role=${currentRole}`;
+
+    // ── Submit ─────────────────────────────────────────
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
+
+      const name             = form.name.value.trim();
+      const last_name        = form.last_name.value.trim();
+      const email            = form.email.value.trim();
+      const password         = form.password.value;
+      const password_confirm = form.password_confirm.value;
+
+      // Validaciones del lado cliente
+      if (!name || !last_name || !email || !password || !password_confirm) {
+        showError('Completa todos los campos.');
+        return;
+      }
+
+      if (password.length < 8) {
+        showError('La contraseña debe tener al menos 8 caracteres.');
+        return;
+      }
+
+      if (password !== password_confirm) {
+        showError('Las contraseñas no coinciden.');
+        return;
+      }
+
+      setLoading(true);
+
+      const result = await Auth.register({
+        role: currentRole,
+        name,
+        last_name,
+        email,
+        password,
+      });
+
+      if (!result.ok) {
+        showError(result.message);
+        setLoading(false);
+        return;
+      }
+
+      // Redirigir al destino original o al dashboard
+      const dest = Auth.getRedirectParam();
+      window.location.href = dest ? decodeURIComponent(dest) : (
+        currentRole === 'teacher'
+          ? '/dashboard/teacher.html'
+          : '/dashboard/student.html'
+      );
+    });
+
+    // ── Helpers ────────────────────────────────────────
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.classList.remove('hidden');
+    }
+
+    function hideError() {
+      errorEl.classList.add('hidden');
+      errorEl.textContent = '';
+    }
+
+    function setLoading(loading) {
+      submitBtn.disabled = loading;
+      submitBtn.textContent = loading ? 'Creando cuenta…' : submitBtn.dataset.label;
+    }
+  </script>
+
+</body>
+</html>
