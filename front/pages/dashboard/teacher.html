@@ -1,0 +1,227 @@
+# pages/dashboard/teacher.html
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel docente — Presente</title>
+
+  <link rel="stylesheet" href="../../css/base/styles.css" />
+
+  <style>
+    .dashboard-layout {
+      min-height: 100vh;
+      background: var(--p-bg);
+    }
+
+    .dashboard-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: var(--space-xl) var(--space-lg);
+    }
+
+    .welcome-card {
+      margin-bottom: var(--space-lg);
+    }
+
+    .welcome-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--p-text-primary);
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+
+    .welcome-subtitle {
+      color: var(--p-text-secondary);
+      font-size: 15px;
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-md);
+      margin-top: var(--space-lg);
+    }
+
+    .action-card {
+      background: var(--p-surface);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      transition: 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .action-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--p-blue);
+      box-shadow: var(--shadow-card);
+      opacity: 1;
+    }
+
+    .action-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: var(--p-blue-pale);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: var(--space-md);
+    }
+
+    .action-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--p-text-primary);
+      margin-bottom: 6px;
+    }
+
+    .action-description {
+      font-size: 14px;
+      color: var(--p-text-secondary);
+      line-height: 1.5;
+    }
+
+    .quick-info {
+      margin-top: var(--space-xl);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: var(--space-md);
+    }
+
+    .info-card {
+      background: var(--p-surface);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+
+    .info-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--p-text-muted);
+      margin-bottom: 8px;
+    }
+
+    .info-value {
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--p-text-primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard-layout">
+
+    <!-- Navbar -->
+    <header class="navbar">
+      <div class="navbar-inner">
+
+        <a href="./teacher.html" class="navbar-logo">
+          Pre<span>sente</span>
+        </a>
+
+        <div class="navbar-user">
+          <span class="navbar-name" id="navbar-username">
+            Docente
+          </span>
+
+          <button class="navbar-logout" data-logout>
+            Cerrar sesión
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Contenido -->
+    <main class="dashboard-content">
+
+      <section class="welcome-card card">
+        <h1 class="welcome-title">
+          Bienvenido de nuevo
+        </h1>
+
+        <p class="welcome-subtitle">
+          Administra tus clases, genera códigos QR y revisa la asistencia de tus estudiantes.
+        </p>
+      </section>
+
+      <!-- Acciones -->
+      <section class="actions-grid">
+
+        <a href="./teacher-create.html" class="action-card">
+          <div class="action-icon">＋</div>
+
+          <h2 class="action-title">
+            Crear nueva clase
+          </h2>
+
+          <p class="action-description">
+            Configura una nueva sesión y genera un código QR para registrar asistencia.
+          </p>
+        </a>
+
+        <a href="./teacher-classes.html" class="action-card">
+          <div class="action-icon">📚</div>
+
+          <h2 class="action-title">
+            Ver mis clases
+          </h2>
+
+          <p class="action-description">
+            Consulta tus clases creadas, estados y estudiantes registrados.
+          </p>
+        </a>
+
+      </section>
+
+      <!-- Estadísticas rápidas -->
+      <section class="quick-info">
+
+        <div class="info-card">
+          <p class="info-label">Clases activas</p>
+          <p class="info-value" id="active-classes">4</p>
+        </div>
+
+        <div class="info-card">
+          <p class="info-label">Asistencias hoy</p>
+          <p class="info-value" id="today-attendance">32</p>
+        </div>
+
+        <div class="info-card">
+          <p class="info-label">Total clases</p>
+          <p class="info-value" id="total-classes">18</p>
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="../../js/auth.js"></script>
+  <script>
+
+    // Verificar autenticación
+    Auth.requireAuth();
+
+    // Verificar rol docente
+    if (Auth.getRole() !== 'teacher') {
+      window.location.href = '../login.html';
+    }
+
+  </script>
+
+</body>
+</html>
+```
