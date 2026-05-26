@@ -1,8 +1,11 @@
 # Importamos Base de SQLAlchemy para crear el ORM y relationship para la coleccion de estudiantes registrados en la clase
-from sqlalchemy.orm import Base, relationship
+from sqlalchemy.orm import relationship
 
 # Importamos de SQLALchemy las columnas, y los tipos de datos necesarios para crear la tabla
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+
+#Importamos el modelo Base de database
+from app.database import Base
 
 
 # Creamos la clase que representa la tabla de las clases que podra generar el docente
