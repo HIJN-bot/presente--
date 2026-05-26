@@ -1,0 +1,434 @@
+# pages/dashboard/teacher-class-detail.html
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detalle de clase — Presente</title>
+
+  <link rel="stylesheet" href="../../css/base/styles.css" />
+
+  <style>
+    .detail-layout {
+      min-height: 100vh;
+      background: var(--p-bg);
+    }
+
+    .detail-content {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: var(--space-xl) var(--space-lg);
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+    }
+
+    .title-block h1 {
+      font-size: 32px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      color: var(--p-text-primary);
+    }
+
+    .title-block p {
+      color: var(--p-text-secondary);
+      font-size: 15px;
+    }
+
+    .class-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+
+    .summary-card {
+      background: var(--p-surface);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+    }
+
+    .summary-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--p-text-muted);
+      margin-bottom: 8px;
+    }
+
+    .summary-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--p-text-primary);
+    }
+
+    .summary-sub {
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--p-text-secondary);
+    }
+
+    .attendance-section {
+      background: var(--p-surface);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+
+    .attendance-header {
+      padding: 22px;
+      border-bottom: 1px solid var(--p-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+    }
+
+    .attendance-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--p-text-primary);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    .attendance-table-custom {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .attendance-table-custom th {
+      background: var(--p-surface-2);
+      padding: 14px 18px;
+      text-align: left;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--p-text-secondary);
+      border-bottom: 1px solid var(--p-border);
+    }
+
+    .attendance-table-custom td {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--p-border-light);
+      color: var(--p-text-primary);
+      font-size: 14px;
+    }
+
+    .attendance-table-custom tr:last-child td {
+      border-bottom: none;
+    }
+
+    .attendance-table-custom tr:hover td {
+      background: var(--p-surface-2);
+    }
+
+    .student-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .student-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--p-blue-pale);
+      color: var(--p-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .student-name {
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .student-email {
+      color: var(--p-text-secondary);
+      font-size: 13px;
+    }
+
+    .status-pill {
+      background: var(--p-green-pale);
+      color: var(--p-green-text);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      width: fit-content;
+    }
+
+    .actions-row {
+      margin-top: var(--space-xl);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="detail-layout">
+
+    <!-- Navbar -->
+    <header class="navbar">
+      <div class="navbar-inner">
+
+        <a href="./teacher.html" class="navbar-logo">
+          Pre<span>sente</span>
+        </a>
+
+        <div class="navbar-user">
+          <span class="navbar-name" id="navbar-username">
+            Docente
+          </span>
+
+          <button class="navbar-logout" data-logout>
+            Cerrar sesión
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Contenido -->
+    <main class="detail-content">
+
+      <!-- Encabezado -->
+      <section class="top-bar">
+
+        <div class="title-block">
+          <h1>
+            Programación Web
+          </h1>
+
+          <p>
+            Información completa de la clase y asistencias registradas.
+          </p>
+        </div>
+
+        <a href="./teacher-class-qr.html?id=1" class="btn btn-primary btn-lg">
+          Ver código QR
+        </a>
+
+      </section>
+
+      <!-- Resumen -->
+      <section class="class-summary">
+
+        <div class="summary-card">
+          <p class="summary-label">
+            Fecha
+          </p>
+
+          <p class="summary-value">
+            26 mayo 2026
+          </p>
+
+          <p class="summary-sub">
+            Miércoles
+          </p>
+        </div>
+
+        <div class="summary-card">
+          <p class="summary-label">
+            Horario
+          </p>
+
+          <p class="summary-value">
+            8:00 AM
+          </p>
+
+          <p class="summary-sub">
+            Hasta las 10:00 AM
+          </p>
+        </div>
+
+        <div class="summary-card">
+          <p class="summary-label">
+            Aula
+          </p>
+
+          <p class="summary-value">
+            204
+          </p>
+
+          <p class="summary-sub">
+            Edificio principal
+          </p>
+        </div>
+
+        <div class="summary-card">
+          <p class="summary-label">
+            Asistencia
+          </p>
+
+          <p class="summary-value">
+            24
+          </p>
+
+          <p class="summary-sub">
+            Estudiantes registrados
+          </p>
+        </div>
+
+      </section>
+
+      <!-- Tabla -->
+      <section class="attendance-section">
+
+        <div class="attendance-header">
+
+          <h2 class="attendance-title">
+            Lista de asistencia
+          </h2>
+
+          <span class="badge badge-active">
+            Clase activa
+          </span>
+
+        </div>
+
+        <div class="table-wrap">
+
+          <table class="attendance-table-custom">
+
+            <thead>
+              <tr>
+                <th>Estudiante</th>
+                <th>Hora entrada</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr>
+                <td>
+
+                  <div class="student-info">
+
+                    <div class="student-avatar">
+                      MC
+                    </div>
+
+                    <div>
+                      <div class="student-name">
+                        María Castro
+                      </div>
+
+                      <div class="student-email">
+                        maria@universidad.edu
+                      </div>
+                    </div>
+
+                  </div>
+
+                </td>
+
+                <td>
+                  7:58 AM
+                </td>
+
+                <td>
+                  <div class="status-pill">
+                    Registrado
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td>
+
+                  <div class="student-info">
+
+                    <div class="student-avatar">
+                      JR
+                    </div>
+
+                    <div>
+                      <div class="student-name">
+                        Juan Rodríguez
+                      </div>
+
+                      <div class="student-email">
+                        juan@universidad.edu
+                      </div>
+                    </div>
+
+                  </div>
+
+                </td>
+
+                <td>
+                  8:03 AM
+                </td>
+
+                <td>
+                  <div class="status-pill">
+                    Registrado
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+      <!-- Acciones -->
+      <section class="actions-row">
+
+        <a href="./teacher-classes.html" class="btn btn-secondary">
+          Volver al listado
+        </a>
+
+        <a href="./teacher-class-qr.html?id=1" class="btn btn-outline-blue">
+          Abrir QR
+        </a>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="../../js/auth.js"></script>
+
+  <script>
+
+    // Validar sesión
+    Auth.requireAuth();
+
+    // Validar rol docente
+    if (Auth.getRole() !== 'teacher') {
+      window.location.href = '../login.html';
+    }
+
+  </script>
+
+</body>
+</html>
+```

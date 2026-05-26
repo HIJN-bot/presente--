@@ -1,0 +1,209 @@
+# pages/attendance.html
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registrando asistencia — Presente</title>
+
+  <link rel="stylesheet" href="../css/base/styles.css" />
+
+  <style>
+    body {
+      background: var(--p-bg);
+    }
+
+    .attendance-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .attendance-card {
+      width: 100%;
+      max-width: 500px;
+      background: var(--p-surface);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .attendance-loader {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 6px solid var(--p-border);
+      border-top-color: var(--p-blue);
+      animation: spin 1s linear infinite;
+    }
+
+    .attendance-title {
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--p-text-primary);
+      letter-spacing: -0.03em;
+    }
+
+    .attendance-text {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--p-text-secondary);
+      max-width: 340px;
+    }
+
+    .attendance-status {
+      width: 100%;
+      background: var(--p-surface-2);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      text-align: left;
+    }
+
+    .status-label {
+      font-size: 12px;
+      color: var(--p-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .status-value {
+      font-size: 14px;
+      color: var(--p-text-primary);
+      font-weight: 500;
+    }
+
+    .attendance-error {
+      width: 100%;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .attendance-card {
+        padding: 28px 20px;
+      }
+
+      .attendance-title {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="attendance-screen">
+
+    <section class="attendance-card">
+
+      <div class="attendance-loader"></div>
+
+      <div>
+        <h1 class="attendance-title">
+          Registrando asistencia...
+        </h1>
+
+        <p class="attendance-text">
+          Estamos verificando tu acceso y registrando tu asistencia en la clase.
+        </p>
+      </div>
+
+      <div class="attendance-status">
+        <p class="status-label">Estado actual</p>
+
+        <p class="status-value" id="status-text">
+          Verificando sesión del estudiante...
+        </p>
+      </div>
+
+      <div id="attendance-error" class="alert alert-error hidden attendance-error"></div>
+
+    </section>
+
+  </main>
+
+  <script src="../js/auth.js"></script>
+  <script>
+    const statusText = document.getElementById('status-text');
+    const errorBox = document.getElementById('attendance-error');
+
+    async function processAttendance() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+
+      if (!token) {
+        showError('No se encontró el token de asistencia.');
+        return;
+      }
+
+      localStorage.setItem('attendance_token', token);
+
+      if (!Auth.isLoggedIn()) {
+        statusText.textContent = 'Redirigiendo al inicio de sesión...';
+
+        const redirect = encodeURIComponent(
+          `/pages/attendance.html?token=${token}`
+        );
+
+        setTimeout(() => {
+          window.location.href = `/pages/login.html?redirect=${redirect}`;
+        }, 1200);
+
+        return;
+      }
+
+      if (Auth.getRole() !== 'student') {
+        showError('Solo los estudiantes pueden registrar asistencia.');
+        return;
+      }
+
+      statusText.textContent = 'Enviando asistencia al servidor...';
+
+      try {
+        // Simulación temporal mientras llega el backend
+        await new Promise(resolve => setTimeout(resolve, 1800));
+
+        // TODO:
+        // await Auth.authFetch('/api/attendance/register', {
+        //   method: 'POST',
+        //   body: JSON.stringify({ token })
+        // });
+
+        statusText.textContent = 'Asistencia registrada correctamente.';
+
+        setTimeout(() => {
+          window.location.href = '/pages/attendance-success.html';
+        }, 1200);
+
+      } catch (error) {
+        console.error(error);
+        showError('Ocurrió un error registrando la asistencia.');
+      }
+    }
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.classList.remove('hidden');
+      statusText.textContent = 'Error en el proceso.';
+    }
+
+    processAttendance();
+  </script>
+
+</body>
+</html>
+```

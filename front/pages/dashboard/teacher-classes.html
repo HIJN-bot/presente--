@@ -1,0 +1,341 @@
+# pages/dashboard/teacher-classes.html
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mis clases — Presente</title>
+
+  <link rel="stylesheet" href="../../css/base/styles.css" />
+
+  <style>
+    .classes-layout {
+      min-height: 100vh;
+      background: var(--p-bg);
+    }
+
+    .classes-content {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: var(--space-xl) var(--space-lg);
+    }
+
+    .top-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+    }
+
+    .page-title {
+      font-size: 30px;
+      font-weight: 600;
+      color: var(--p-text-primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .page-subtitle {
+      font-size: 15px;
+      color: var(--p-text-secondary);
+    }
+
+    .classes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: var(--space-md);
+    }
+
+    .class-card-custom {
+      background: var(--p-surface);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-xl);
+      padding: 22px;
+      text-decoration: none;
+      color: inherit;
+      transition: 0.2s ease;
+      display: block;
+    }
+
+    .class-card-custom:hover {
+      transform: translateY(-2px);
+      border-color: var(--p-blue);
+      box-shadow: var(--shadow-card);
+      opacity: 1;
+    }
+
+    .class-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-md);
+    }
+
+    .class-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--p-text-primary);
+      margin-bottom: 4px;
+    }
+
+    .class-code {
+      font-size: 13px;
+      color: var(--p-text-muted);
+    }
+
+    .class-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: var(--space-md);
+    }
+
+    .class-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--p-text-secondary);
+      font-size: 14px;
+    }
+
+    .students-count {
+      margin-top: var(--space-lg);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--p-border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-sm);
+    }
+
+    .students-text {
+      font-size: 14px;
+      color: var(--p-text-secondary);
+    }
+
+    .students-number {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--p-text-primary);
+    }
+
+    .empty-state-custom {
+      margin-top: var(--space-xl);
+      background: var(--p-surface);
+      border: 1px dashed var(--p-border);
+      border-radius: var(--radius-xl);
+      padding: 60px 24px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: var(--space-md);
+    }
+
+    .empty-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--p-text-primary);
+      margin-bottom: 10px;
+    }
+
+    .empty-text {
+      color: var(--p-text-secondary);
+      max-width: 420px;
+      margin: 0 auto var(--space-lg);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="classes-layout">
+
+    <!-- Navbar -->
+    <header class="navbar">
+      <div class="navbar-inner">
+
+        <a href="./teacher.html" class="navbar-logo">
+          Pre<span>sente</span>
+        </a>
+
+        <div class="navbar-user">
+          <span class="navbar-name" id="navbar-username">
+            Docente
+          </span>
+
+          <button class="navbar-logout" data-logout>
+            Cerrar sesión
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Contenido -->
+    <main class="classes-content">
+
+      <!-- Header -->
+      <section class="top-section">
+
+        <div>
+          <h1 class="page-title">
+            Mis clases
+          </h1>
+
+          <p class="page-subtitle">
+            Consulta todas las clases creadas y revisa su estado.
+          </p>
+        </div>
+
+        <a href="./teacher-create.html" class="btn btn-primary btn-lg">
+          Crear nueva clase
+        </a>
+
+      </section>
+
+      <!-- Lista de clases -->
+      <section class="classes-grid">
+
+        <a href="./teacher-class-detail.html?id=1" class="class-card-custom">
+
+          <div class="class-header">
+            <div>
+              <h2 class="class-title">
+                Programación Web
+              </h2>
+
+              <p class="class-code">
+                Código: PW-2026-01
+              </p>
+            </div>
+
+            <span class="badge badge-active">
+              Activa
+            </span>
+          </div>
+
+          <div class="class-info">
+
+            <div class="class-row">
+              📅 26 mayo 2026
+            </div>
+
+            <div class="class-row">
+              🕒 8:00 AM - 10:00 AM
+            </div>
+
+            <div class="class-row">
+              📍 Aula 204
+            </div>
+
+          </div>
+
+          <div class="students-count">
+            <span class="students-text">
+              Estudiantes registrados
+            </span>
+
+            <span class="students-number">
+              24
+            </span>
+          </div>
+
+        </a>
+
+        <a href="./teacher-class-detail.html?id=2" class="class-card-custom">
+
+          <div class="class-header">
+            <div>
+              <h2 class="class-title">
+                Bases de Datos
+              </h2>
+
+              <p class="class-code">
+                Código: BD-2026-02
+              </p>
+            </div>
+
+            <span class="badge badge-upcoming">
+              Próxima
+            </span>
+          </div>
+
+          <div class="class-info">
+
+            <div class="class-row">
+              📅 28 mayo 2026
+            </div>
+
+            <div class="class-row">
+              🕒 10:00 AM - 12:00 PM
+            </div>
+
+            <div class="class-row">
+              📍 Laboratorio B
+            </div>
+
+          </div>
+
+          <div class="students-count">
+            <span class="students-text">
+              Estudiantes inscritos
+            </span>
+
+            <span class="students-number">
+              18
+            </span>
+          </div>
+
+        </a>
+
+      </section>
+
+      <!-- Estado vacío -->
+      <section class="empty-state-custom hidden" id="empty-state">
+
+        <div class="empty-icon">
+          📚
+        </div>
+
+        <h2 class="empty-title">
+          Aún no tienes clases creadas
+        </h2>
+
+        <p class="empty-text">
+          Crea tu primera clase para empezar a registrar asistencia mediante códigos QR.
+        </p>
+
+        <a href="./teacher-create.html" class="btn btn-primary">
+          Crear clase
+        </a>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="../../js/auth.js"></script>
+
+  <script>
+
+    // Validar sesión
+    Auth.requireAuth();
+
+    // Validar rol docente
+    if (Auth.getRole() !== 'teacher') {
+      window.location.href = '../login.html';
+    }
+
+  </script>
+
+</body>
+</html>
+```

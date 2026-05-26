@@ -115,7 +115,7 @@
 
       <p class="form-footer">
         ¿No tienes cuenta?
-        <a href="/pages/register.html" id="register-link">Regístrate</a>
+        <a href="../pages/register.html" id="register-link">Regístrate</a>
       </p>
 
     </div>
@@ -143,7 +143,7 @@
 
         // Actualizar enlace de registro con el mismo rol
         const redirect = Auth.getRedirectParam();
-        const base = `../pages/register.html?role=${currentRole}`;
+        const base = `./register.html?role=${currentRole}`;
         regLink.href = redirect ? `${base}&redirect=${encodeURIComponent(redirect)}` : base;
 
         hideError();

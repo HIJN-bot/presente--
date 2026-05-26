@@ -1,0 +1,200 @@
+# pages/attendance-success.html
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asistencia registrada — Presente</title>
+
+  <link rel="stylesheet" href="../css/base/styles.css" />
+
+  <style>
+    body {
+      background: var(--p-bg);
+    }
+
+    .success-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .success-card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--p-surface);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .success-icon {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: var(--p-green-pale);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: var(--p-green-text);
+    }
+
+    .success-title {
+      font-size: 30px;
+      font-weight: 600;
+      color: var(--p-text-primary);
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
+
+    .success-description {
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--p-text-secondary);
+      max-width: 380px;
+    }
+
+    .success-meta {
+      width: 100%;
+      background: var(--p-surface-2);
+      border: 1px solid var(--p-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      text-align: left;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .meta-label {
+      font-size: 13px;
+      color: var(--p-text-muted);
+    }
+
+    .meta-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--p-text-primary);
+    }
+
+    .success-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+
+    @media (max-width: 600px) {
+      .success-card {
+        padding: 28px 20px;
+      }
+
+      .success-title {
+        font-size: 24px;
+      }
+
+      .meta-row {
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .success-actions {
+        flex-direction: column;
+      }
+
+      .success-actions .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="success-screen">
+
+    <section class="success-card">
+
+      <div class="success-icon">
+        ✓
+      </div>
+
+      <div>
+        <h1 class="success-title">
+          ¡Asistencia registrada!
+        </h1>
+
+        <p class="success-description">
+          Tu asistencia fue registrada exitosamente en la clase.
+        </p>
+      </div>
+
+      <div class="success-meta">
+
+        <div class="meta-row">
+          <span class="meta-label">Clase</span>
+          <span class="meta-value" id="class-name">
+            Programación Web
+          </span>
+        </div>
+
+        <div class="meta-row">
+          <span class="meta-label">Fecha</span>
+          <span class="meta-value" id="attendance-date">
+            26 de mayo de 2026
+          </span>
+        </div>
+
+        <div class="meta-row">
+          <span class="meta-label">Hora</span>
+          <span class="meta-value" id="attendance-time">
+            7:14 AM
+          </span>
+        </div>
+
+      </div>
+
+      <div class="success-actions">
+
+        <a href="dashboard/student.html" class="btn btn-primary">
+          Ir al panel
+        </a>
+
+        <a href="index.html" class="btn btn-secondary">
+          Inicio
+        </a>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="../js/auth.js"></script>
+  <script>
+    Auth.requireAuth();
+
+    if (Auth.getRole() !== 'student') {
+      window.location.href = 'dashboard/teacher.html';
+    }
+
+    // TODO:
+    // - Obtener datos reales de asistencia
+    // - Mostrar nombre real de clase, fecha y hora
