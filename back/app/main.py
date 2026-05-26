@@ -13,6 +13,9 @@ from app.routers.docentes import registro as registro_docentes
 #Importamos el router de login de docentes
 from app.routers.docentes import login as login_docentes
 
+#Importamos el router de creacion de la clase
+from app.routers.clases import creacion as creacion_clase
+
 # instanciamos la aplicacion de FastAPI
 app: FastAPI = FastAPI(
     title="Presente", description="Sistema de registro por QR", version="0.1.0"
@@ -24,6 +27,8 @@ app.include_router(login_estudiantes.router, prefix="/api", tags=["estudiantes"]
 # Montamos los routers de los docentes en la aplicacion
 app.include_router(registro_docentes.router, prefix="/api", tags=["docentes"])
 app.include_router(login_docentes.router, prefix="/api", tags=["docentes"])
+#Montamos los routers de la clase en la aplicacion
+app.include_router(creacion_clase.router, prefix="/api", tags=["clases"])
 
 
 # Funcion principal de la aplicacion
