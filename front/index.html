@@ -1,47 +1,72 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Asistencia con Código QR</title>
-    <link rel="stylesheet" href="css/base/styles.css">
-    <link rel="stylesheet" href="css/pages/index.css">
-    <link rel="shortcut icon" href="resources/img/Attendance System.png" type="image/x-icon">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Presente — Registro de asistencia</title>
+  <link rel="stylesheet" href="css\base\styles.css" />
+  <style>
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .hero-logo {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--p-blue);
+      margin-bottom: 8px;
+    }
+    body { background: var(--p-bg); }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .hero-footnote {
+      margin-top: 48px;
+      font-size: 12px;
+      color: var(--p-gray-400);
+    }
+  </style>
 </head>
-
 <body>
-    <span class="titulo-presente">Presente</span>
 
-    <main>
-        <h2>Bienvenido al Sistema de Asistencia</h2>
+  <main class="hero">
 
-        <form id="form" method="post">
-            <div class="role">
-                <label><input type="radio" name="role" id="teacher_radio" value="teacher" onchange="checkRadio()"
-                        required> Profesor</label>
-                <label><input type="radio" name="role" id="student_radio" value="student" onchange="checkRadio()"
-                        required> Estudiante</label>
-            </div>
+    <p class="hero-logo">Presente</p>
 
-            <div class="input_area">
-                <input type="email" placeholder="Ingresa tu correo" name="email" required>
-            </div>
+    <h1 class="t-hero">Asistencia sin papel,<br>sin complicaciones.</h1>
 
-            <div class="input_area">
-                <input type="password" placeholder="Ingresa tu contraseña" name="password" required>
-            </div>
+    <p class="t-body" style="color: var(--p-gray-600); max-width: 400px; margin-top: 8px;">
+      El docente muestra un QR. El estudiante lo escanea. La asistencia queda registrada al instante.
+    </p>
 
-            <button class="button_submit">Iniciar Sesión</button>
+    <div class="hero-actions">
+      <a href="/login.html" class="btn btn-primary btn-lg">Iniciar sesión</a>
+      <a href="/register.html" class="btn btn-secondary btn-lg">Registrarse</a>
+    </div>
 
-            <div class="msg">
-                ¿Eres nuevo estudiante? <a href="register.php">Regístrate aquí</a>
-            </div>
-        </form>
-    </main>
+    <p class="hero-footnote">Universidad · Institucional · Seguro</p>
 
-    <!--Llamando los scripts de JavaScript-->
-    <script src="js/utils/preferences.js"></script>
+  </main>
+
+  <script src="js\auth.js"></script>
+  <script>
+    if (Auth.isLoggedIn()) Auth.redirectToDashboard();
+  </script>
+
 </body>
-
 </html>
