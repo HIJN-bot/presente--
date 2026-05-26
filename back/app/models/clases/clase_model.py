@@ -1,20 +1,24 @@
-#Importamos Base de SQLAlchemy para crear el ORM y relationship para la coleccion de estudiantes registrados en la clase
+# Importamos Base de SQLAlchemy para crear el ORM y relationship para la coleccion de estudiantes registrados en la clase
 from sqlalchemy.orm import Base, relationship
-#Importamos de SQLALchemy las columnas, y los tipos de datos necesarios para crear la tabla
+
+# Importamos de SQLALchemy las columnas, y los tipos de datos necesarios para crear la tabla
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 
-#Creamos la clase que representa la tabla de las clases que podra generar el docente
+
+# Creamos la clase que representa la tabla de las clases que podra generar el docente
 class Clase(Base):
-    #Nombre de la tabla
+    # Nombre de la tabla
     __tablename__ = "clase"
     id = Column(Integer, primary_key=True)
-    #Nombre de la materia
+    # Nombre de la materia
     materia = Column(String, nullable=False)
-    #Horario de la clase
+    # Horario de la clase
     horario = Column(DateTime, nullable=False)
-    #Id del docente que creo la clase
+    # Id del docente que creo la clase
     docente_id = Column(Integer, ForeignKey("docentes.id"))
-    #Nombre del docente
+    # Nombre del docente
     docente = relationship("Docente", back_populates="clase")
-    #Coleccion de estudiantes, referenciamos al modelo del estudiante
+    # Coleccion de estudiantes, referenciamos al modelo del estudiante
     estudiantes = relationship("Estudiante", back_populates="clase")
+    # QR de la clase
+    qr = Column(String, nullable=False)

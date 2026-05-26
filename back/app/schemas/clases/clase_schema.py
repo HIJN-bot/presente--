@@ -16,6 +16,8 @@ class ClaseCreada(BaseModel):
     materia: str 
     #Horario asignado a la clase
     horario: datetime
+    #ID del docente que dara la clase
+    docente_id: int
     #Nombre del docente que dara la clase
     docente: str
     #Coleccion de estudiantes registrados en la asistencia de la clase
