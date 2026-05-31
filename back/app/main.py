@@ -25,6 +25,9 @@ from app.routers.qr import enviar as enviar_qr
 # Importamos el router del registro de la asistencia
 from app.routers.asistencias import registrar as registrar_asistencia
 
+#Importamos el router de la consulta a la asistencia de la clase
+from app.routers.asistencias import consultar as consultar_asistencia
+
 # instanciamos la aplicacion de FastAPI
 app: FastAPI = FastAPI(
     title="Presente", description="Sistema de registro por QR", version="0.1.0"
@@ -43,6 +46,7 @@ app.include_router(consultar_clase.router, prefix="/api", tags=["clases"])
 app.include_router(enviar_qr.router, prefix="/api", tags=["qr"])
 # Montamos los routers de la asistencia en la aplicacion
 app.include_router(registrar_asistencia.router, prefix="/api", tags=["asistencia"])
+app.include_router(consultar_asistencia.router, prefix="/api", tags=["asistencia"])
 
 
 # Funcion principal de la aplicacion
