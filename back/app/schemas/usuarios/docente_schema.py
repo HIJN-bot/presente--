@@ -8,7 +8,7 @@ from typing import List
 from app.schemas.usuarios import usuario_schema as us
 
 # Importamos el esquema de la clase para la lista de las clases del docente
-from app.schemas.clases.clase_schema import ClaseCreada
+from app.schemas.clases.clase_schema import ClaseRespuesta
 
 class DocenteCreado(us.UsuarioCreado):
-    clases: List[ClaseCreada]
+    clases: List[ClaseRespuesta]
