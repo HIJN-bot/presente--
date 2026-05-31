@@ -24,4 +24,4 @@ class Clase(Base):
     # Coleccion de estudiantes, referenciamos al modelo del estudiante
     estudiantes = relationship("Estudiante", back_populates="clase")
     # QR de la clase
-    qr = Column(Text, nullable=False)
+    qr = Column(Text, nullable=True)

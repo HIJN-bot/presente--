@@ -10,6 +10,9 @@ from sqlalchemy import select
 # Importamos el ManagerClase
 from app.services.clases.manager_clases import ManagerClases
 
+# Importamos el QrManager
+from app.services.qr.manager_qr import ManagerQr
+
 # Importamos el schema de estudiante
 from app.schemas.usuarios.estudiante_schema import EstudianteCreado
 
@@ -18,6 +21,9 @@ from app.schemas.clases.clase_schema import ClaseCreada
 
 # Importamos el schema del docente
 from app.schemas.usuarios.docente_schema import DocenteCreado
+
+# Importamos el schema del QR
+from app.schemas.clases.qr_clase_schema import QrCreado
 
 # Importamos el modelo de docente
 from app.models.usuarios.docente_model import Docente
@@ -53,6 +59,8 @@ async def crear_clase(
     try:
         # Instanciamos el ManagerClase
         manager_clase: ManagerClases = ManagerClases()
+        # Instanciamos el ManagerQr
+        manager_qr: ManagerQr = ManagerQr()
         # Creamos el schema de la clase
         datos_clase: ClaseCreada = manager_clase.crear_clase(
             informacion_clase.materia,
@@ -66,12 +74,7 @@ async def crear_clase(
             horario=datos_clase.horario,
             docente_id=getattr(
                 datos_clase, "docente_id", None
-            ),  # Usamos getattr por si el campo no existe
-            qr=(
-                datos_clase.qr.qr_image
-                if hasattr(datos_clase.qr, "qr_image")
-                else datos_clase.qr
-            ),
+            )
         )
         # Creamos la consulta para obtener el docente de la base de datos
         query = select(Docente).where(Docente.email == informacion_docente.email)
@@ -92,6 +95,16 @@ async def crear_clase(
         db.refresh(clase)
         # Refrescamos despues del commit
         db.refresh(docente_db)
+        #Creamos el QR para asignarlo a su clase
+        qr = manager_qr.crear_qr(clase_id=clase.id, endpoint=f"/asistencia?clase_id={clase.id}")
+        #Asignamos el QR a la clase 
+        clase.qr = qr.qr_image
+        #Añadimos la clase nuevamente a los cambios para la base de datos
+        db.add(clase)
+        #Comprometemos los cambios de la clase ahora con el QR 
+        db.commit()
+        #Refrescamos despues del commit
+        db.refresh(clase)
         # Retornamos la instancia de la clase creada (puedes  retornar el modelo o un schema de respuesta)
         return clase
     except Exception:
