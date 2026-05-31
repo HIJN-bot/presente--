@@ -36,24 +36,6 @@ class ManagerClases:
     def __init__(self):
         pass
 
-    def crear_clase(
-        self, materia: str, horario: datetime, docente: Docente, qr: QrCreado
-    ) -> ClaseCreada:
-        """
-        Este metodo se encarga de instanciar un objeto clase:
-        - Creamos una lista vacia para los estudiantes
-        - Instanciamos la clase ClaseCreadaF'
-        - Retornamos la instancia
-        """
-        # Creamos la lista
-        estudiantes: List[EstudianteCreado] = []
-        # Instanciamos la clase que queremos crear
-        clase: ClaseCreada = ClaseCreada(
-            materia, horario, docente.id, docente.nombre, estudiantes, qr
-        )
-        # Retornamos la instancia
-        return clase
-
     def registrar_estudiante(
         self, clase: ClaseCreada, estudiante: EstudianteCreado
     ) -> ClaseCreada:
