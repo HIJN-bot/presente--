@@ -41,7 +41,8 @@ app.include_router(creacion_clase.router, prefix="/api", tags=["clases"])
 app.include_router(consultar_clase.router, prefix="/api", tags=["clases"])
 # Montamos el router del envio del QR a la aplicacion
 app.include_router(enviar_qr.router, prefix="/api", tags=["qr"])
-
+# Montamos los routers de la asistencia en la aplicacion
+app.include_router(registrar_asistencia.router, prefix="/api", tags=["asistencia"])
 
 
 # Funcion principal de la aplicacion
