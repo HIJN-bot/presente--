@@ -11,4 +11,4 @@ from app.schemas.usuarios import usuario_schema as us
 from app.schemas.clases.clase_schema import ClaseRespuesta
 
 class DocenteCreado(us.UsuarioCreado):
-    clases: List[ClaseRespuesta]
+    clases: List[ClaseRespuesta] = []

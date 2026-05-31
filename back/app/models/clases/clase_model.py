@@ -7,6 +7,9 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
 #Importamos el modelo Base de database
 from app.database import Base
 
+# Importamos la tabla puente de asistencia desde su modulo propio
+from app.models.tablas.asistencia_clase_estudiante import asistencia_clase_estudiante
+
 
 # Creamos la clase que representa la tabla de las clases que podra generar el docente
 class Clase(Base):
@@ -20,8 +23,12 @@ class Clase(Base):
     # Id del docente que creo la clase
     docente_id = Column(Integer, ForeignKey("docentes.id"))
     # Nombre del docente
-    docente = relationship("Docente", back_populates="clase")
+    docente = relationship("Docente", back_populates="clases")
     # Coleccion de estudiantes, referenciamos al modelo del estudiante
-    estudiantes = relationship("Estudiante", back_populates="clase")
+    estudiantes = relationship(
+        "Estudiante",
+        secondary=asistencia_clase_estudiante,
+        backref="clases",
+    )
     # QR de la clase
     qr = Column(Text, nullable=True)

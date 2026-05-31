@@ -15,4 +15,4 @@ from app.models.usuarios import usuario_model as um
 class Docente(um.Usuario):
     __tablename__ = "docentes"
     id = Column(Integer, primary_key=True, index=True)
-    clases = relationship("Clase", back_populates="docentes")
+    clases = relationship("Clase", back_populates="docente")
