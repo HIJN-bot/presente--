@@ -267,11 +267,11 @@
 
       // Redirigir al destino original o al dashboard
       const dest = Auth.getRedirectParam();
-      window.location.href = dest ? decodeURIComponent(dest) : (
-        currentRole === 'teacher'
-          ? '/dashboard/teacher.html'
-          : '/dashboard/student.html'
-      );
+        window.location.href = dest ? decodeURIComponent(dest) : (
+          currentRole === 'teacher'
+            ? './dashboard/teacher.html'
+            : './dashboard/student.html'
+        );
     });
 
     // ── Helpers ────────────────────────────────────────

@@ -1,6 +1,3 @@
-# pages/attendance.html
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -143,24 +140,22 @@
 
     async function processAttendance() {
       const params = new URLSearchParams(window.location.search);
-      const token = params.get('token');
+      const classId = params.get('clase_id') || params.get('token');
 
-      if (!token) {
-        showError('No se encontró el token de asistencia.');
+      if (!classId) {
+        showError('No se encontró el identificador de la clase.');
         return;
       }
-
-      localStorage.setItem('attendance_token', token);
 
       if (!Auth.isLoggedIn()) {
         statusText.textContent = 'Redirigiendo al inicio de sesión...';
 
         const redirect = encodeURIComponent(
-          `/pages/attendance.html?token=${token}`
+          `/pages/attendance.html?clase_id=${classId}`
         );
 
         setTimeout(() => {
-          window.location.href = `/pages/login.html?redirect=${redirect}`;
+          window.location.href = `/pages/login.html?role=student&redirect=${redirect}`;
         }, 1200);
 
         return;
@@ -174,14 +169,27 @@
       statusText.textContent = 'Enviando asistencia al servidor...';
 
       try {
-        // Simulación temporal mientras llega el backend
-        await new Promise(resolve => setTimeout(resolve, 1800));
+        const user = Auth.getUser();
+        if (!user?.email) {
+          showError('No se pudo identificar al estudiante autenticado.');
+          return;
+        }
 
-        // TODO:
-        // await Auth.authFetch('/api/attendance/register', {
-        //   method: 'POST',
-        //   body: JSON.stringify({ token })
-        // });
+        const res = await Auth.authFetch('/api/asistencia/registro', {
+          method: 'POST',
+          body: JSON.stringify({
+            id_clase: Number(classId),
+            email_estudiante: user.email,
+          }),
+        });
+
+        if (!res) return;
+
+        if (!res.ok) {
+          const data = await res.json();
+          showError(data.detail || data.message || 'No se pudo registrar la asistencia.');
+          return;
+        }
 
         statusText.textContent = 'Asistencia registrada correctamente.';
 
@@ -206,4 +214,3 @@
 
 </body>
 </html>
-```

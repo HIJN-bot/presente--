@@ -1,6 +1,3 @@
-# pages/dashboard/teacher-class-detail.html
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -418,17 +415,145 @@
   <script src="../../js/auth.js"></script>
 
   <script>
-
-    // Validar sesión
     Auth.requireAuth();
 
-    // Validar rol docente
     if (Auth.getRole() !== 'teacher') {
       window.location.href = '../login.html';
+    } else {
+      loadClassDetail();
+    }
+
+    async function loadClassDetail() {
+      const params = new URLSearchParams(window.location.search);
+      const classId = params.get('id');
+
+      if (!classId) {
+        window.location.href = './teacher-classes.html';
+        return;
+      }
+
+      const qrButton = document.querySelector('.top-bar .btn-primary');
+      const backButton = document.querySelector('.actions-row .btn-secondary');
+      if (qrButton) qrButton.href = `./teacher-class-qr.html?id=${classId}`;
+      if (backButton) backButton.href = './teacher-classes.html';
+
+      try {
+        const user = Auth.getUser();
+        if (!user?.email) {
+          throw new Error('No se pudo identificar al docente autenticado.');
+        }
+
+        const classesRes = await Auth.authFetch(`/api/clases/consultar?email_docente=${encodeURIComponent(user.email)}`);
+        if (!classesRes) return;
+        const classes = await classesRes.json();
+        if (!classesRes.ok) {
+          throw new Error(classes.detail || 'No se pudo cargar la clase.');
+        }
+
+        const cls = Array.isArray(classes) ? classes.find(item => String(item.id) === String(classId)) : null;
+        if (!cls) {
+          throw new Error('La clase no fue encontrada.');
+        }
+
+        const attendanceRes = await Auth.authFetch(`/api/asistencia/consulta?id_clase=${encodeURIComponent(classId)}`);
+        if (!attendanceRes) return;
+        const attendance = await attendanceRes.json();
+        if (!attendanceRes.ok) {
+          throw new Error(attendance.detail || 'No se pudo cargar la asistencia.');
+        }
+
+        const students = attendance.asistencia_estudiantes || [];
+        const status = getClassStatus(cls.horario);
+
+        setText('.title-block h1', cls.materia);
+        setText('.title-block p', 'Información completa de la clase y asistencias registradas.');
+
+        const summaryCards = document.querySelectorAll('.summary-card');
+        if (summaryCards[0]) summaryCards[0].querySelector('.summary-value').textContent = formatDate(cls.horario);
+        if (summaryCards[0]) summaryCards[0].querySelector('.summary-sub').textContent = formatWeekday(cls.horario);
+        if (summaryCards[1]) summaryCards[1].querySelector('.summary-value').textContent = formatTime(cls.horario);
+        if (summaryCards[1]) summaryCards[1].querySelector('.summary-sub').textContent = 'Horario registrado';
+        if (summaryCards[2]) summaryCards[2].querySelector('.summary-value').textContent = '—';
+        if (summaryCards[2]) summaryCards[2].querySelector('.summary-sub').textContent = 'Dato no disponible en el modelo actual';
+        if (summaryCards[3]) summaryCards[3].querySelector('.summary-value').textContent = String(students.length);
+        if (summaryCards[3]) summaryCards[3].querySelector('.summary-sub').textContent = 'Estudiantes registrados';
+
+        const attendanceBadge = document.querySelector('.attendance-header .badge');
+        if (attendanceBadge) {
+          attendanceBadge.className = `badge ${status.badgeClass}`;
+          attendanceBadge.textContent = status.label;
+        }
+
+        const tableBody = document.querySelector('.attendance-table-custom tbody');
+        if (tableBody) {
+          tableBody.innerHTML = students.length
+            ? students.map(renderStudentRow).join('')
+            : `<tr><td colspan="3">No hay estudiantes registrados todavía.</td></tr>`;
+        }
+
+      } catch (error) {
+        const content = document.querySelector('.detail-content');
+        if (content) {
+          content.insertAdjacentHTML('afterbegin', `<div class="alert alert-error">${escapeHtml(error.message || 'No se pudo cargar el detalle de la clase.')}</div>`);
+        }
+      }
+    }
+
+    function renderStudentRow(student) {
+      const initials = `${student.nombre?.[0] || ''}${student.apellido?.[0] || ''}`.toUpperCase();
+      return `
+        <tr>
+          <td>
+            <div class="student-info">
+              <div class="student-avatar">${escapeHtml(initials || 'P')}</div>
+              <div>
+                <div class="student-name">${escapeHtml(`${student.nombre || ''} ${student.apellido || ''}`.trim())}</div>
+                <div class="student-email">${escapeHtml(student.email || '—')}</div>
+              </div>
+            </div>
+          </td>
+          <td>Registrado</td>
+          <td><div class="status-pill">Registrado</div></td>
+        </tr>`;
+    }
+
+    function setText(selector, value) {
+      const element = document.querySelector(selector);
+      if (element) element.textContent = value;
+    }
+
+    function getClassStatus(value) {
+      if (!value) return { badgeClass: 'badge-neutral', label: 'Sin fecha' };
+      const classDate = new Date(value);
+      const now = new Date();
+      const diffHours = (classDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+      if (diffHours < -2) return { badgeClass: 'badge-expired', label: 'Caducada' };
+      if (diffHours < 1) return { badgeClass: 'badge-active', label: 'Activa' };
+      return { badgeClass: 'badge-upcoming', label: 'Próxima' };
+    }
+
+    function formatDate(value) {
+      if (!value) return '—';
+      return new Date(value).toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' });
+    }
+
+    function formatWeekday(value) {
+      if (!value) return '—';
+      return new Date(value).toLocaleDateString('es-CO', { weekday: 'long' });
+    }
+
+    function formatTime(value) {
+      if (!value) return '—';
+      return new Date(value).toLocaleTimeString('es-CO', { hour: 'numeric', minute: '2-digit' });
+    }
+
+    function escapeHtml(value) {
+      const div = document.createElement('div');
+      div.textContent = value ?? '';
+      return div.innerHTML;
     }
 
   </script>
 
 </body>
 </html>
-```

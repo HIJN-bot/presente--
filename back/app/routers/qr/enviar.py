@@ -38,5 +38,8 @@ async def enviar_qr(id_clase: int, db: Session = Depends(get_db)):
         qr = clase.qr
         #Retornamos la imagen del QR 
         return {"imagen_qr": qr}
+    except HTTPException:
+        raise
+
     except Exception:
         raise HTTPException(status_code=400, detail="Ha ocurrido un error, intentelo de nuevo")

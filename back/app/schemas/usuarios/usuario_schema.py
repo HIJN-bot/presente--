@@ -11,3 +11,10 @@ class UsuarioCreado(BaseModel):
     apellido: str
     email: EmailStr
     contrasena: str
+
+
+# Clase para el login del usuario
+class UsuarioLogin(BaseModel):
+    email: EmailStr
+    contrasena: str
+

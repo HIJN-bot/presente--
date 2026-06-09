@@ -18,6 +18,7 @@ from app.models.usuarios import estudiante_model as em
 
 # Importamos servicios necesarios
 from app.services.usuarios.crear_hash import hashear_contrasena
+from app.services.usuarios.auth_service import generar_token
 from app.services.usuarios.crear_usuario import crear_usuario
 from app.services.usuarios.validar_email import validar_email
 from app.services.usuarios.respuesta_usuario import crear_respuesta
@@ -47,7 +48,7 @@ async def registrar_estudiante(
         # Instanciar el modelo ORM Estudiante con los datos
         estudiante = em.Estudiante(**datos_estudiante)
         # Verificamos que el email propuesto no este registrado
-        if not validar_email(estudiante.email, estudiante, db):
+        if not validar_email(estudiante.email, em.Estudiante, db):
             raise HTTPException(
                 status_code=409, detail="Ese correo electronico ya esta registrado"
             )
@@ -63,12 +64,19 @@ async def registrar_estudiante(
             apellido=estudiante.apellido,
             email=estudiante.email,
         )
-        # Retornar el estudiante creado
-        return respuesta_usuario
+        # Retornar el estudiante creado y un token opaco para la sesión del Front
+        return {
+            "token": generar_token("student", estudiante.email),
+            "role": "student",
+            "user": respuesta_usuario.model_dump(),
+        }
 
     except ValueError as e:
         # Si hay error de validación
         raise HTTPException(status_code=400, detail=f"Datos inválidos: {str(e)}")
+    except HTTPException:
+        raise
+
     except Exception as e:
         # Si hay error en la base de datos (ej: email duplicado)
         raise HTTPException(

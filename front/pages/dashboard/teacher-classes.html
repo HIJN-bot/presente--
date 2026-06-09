@@ -1,6 +1,3 @@
-# pages/dashboard/teacher-classes.html
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -332,10 +329,112 @@
     // Validar rol docente
     if (Auth.getRole() !== 'teacher') {
       window.location.href = '../login.html';
+    } else {
+      loadClasses();
+    }
+
+    async function loadClasses() {
+      const grid = document.querySelector('.classes-grid');
+      const emptyState = document.getElementById('empty-state');
+
+      if (!grid) return;
+
+      grid.innerHTML = renderSkeleton(4);
+
+      try {
+        const user = Auth.getUser();
+        if (!user?.email) {
+          throw new Error('No se pudo identificar al docente autenticado.');
+        }
+
+        const res = await Auth.authFetch(`/api/clases/consultar?email_docente=${encodeURIComponent(user.email)}`);
+        if (!res) return;
+
+        const classes = await res.json();
+        if (!res.ok) {
+          throw new Error(classes.detail || 'No se pudo cargar el listado de clases.');
+        }
+
+        if (!Array.isArray(classes) || classes.length === 0) {
+          grid.innerHTML = '';
+          if (emptyState) emptyState.classList.remove('hidden');
+          return;
+        }
+
+        if (emptyState) emptyState.classList.add('hidden');
+        grid.innerHTML = classes.map(renderClassCard).join('');
+      } catch (error) {
+        grid.innerHTML = `<div class="alert alert-error">${escHtml(error.message || 'No se pudo cargar el listado de clases.')}</div>`;
+      }
+    }
+
+    function renderClassCard(cls) {
+      const date = formatDate(cls.horario);
+      const time = formatTime(cls.horario);
+      const status = getClassStatus(cls.horario);
+
+      return `
+        <a href="./teacher-class-detail.html?id=${cls.id}" class="class-card-custom">
+          <div class="class-header">
+            <div>
+              <h2 class="class-title">${escHtml(cls.materia)}</h2>
+              <p class="class-code">Fecha: ${escHtml(date)}</p>
+            </div>
+
+            <span class="badge ${status.badgeClass}">${status.label}</span>
+          </div>
+
+          <div class="class-info">
+            <div class="class-row">🕒 ${escHtml(time)}</div>
+            <div class="class-row">📚 ${escHtml(String(cls.student_count ?? 0))} estudiantes registrados</div>
+          </div>
+
+          <div class="students-count">
+            <span class="students-text">Estudiantes registrados</span>
+            <span class="students-number">${escHtml(String(cls.student_count ?? 0))}</span>
+          </div>
+        </a>`;
+    }
+
+    function renderSkeleton(count) {
+      return Array.from({ length: count }, () => `
+        <div class="class-card-custom" style="pointer-events:none; opacity:0.45; min-height:220px; background:var(--p-gray-100);"></div>
+      `).join('');
+    }
+
+    function formatDate(value) {
+      if (!value) return '—';
+      return new Date(value).toLocaleDateString('es-CO', {
+        day: '2-digit', month: 'long', year: 'numeric'
+      });
+    }
+
+    function formatTime(value) {
+      if (!value) return '—';
+      return new Date(value).toLocaleTimeString('es-CO', {
+        hour: 'numeric', minute: '2-digit'
+      });
+    }
+
+    function getClassStatus(value) {
+      if (!value) return { badgeClass: 'badge-neutral', label: 'Sin fecha' };
+
+      const classDate = new Date(value);
+      const now = new Date();
+      const diffHours = (classDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+      if (diffHours < -2) return { badgeClass: 'badge-expired', label: 'Caducada' };
+      if (diffHours < 1) return { badgeClass: 'badge-active', label: 'Activa' };
+      return { badgeClass: 'badge-upcoming', label: 'Próxima' };
+    }
+
+    function escHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str ?? '';
+      return div.innerHTML;
     }
 
   </script>
 
 </body>
 </html>
-```

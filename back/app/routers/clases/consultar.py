@@ -42,8 +42,23 @@ async def consultar_clase(
         # Verificamos que hayamos encontrado ese docente
         if docente_db is None:
             raise HTTPException(status_code=404, detail="Docente no encontrado")
-        # Retornamos las clases
-        return docente_db.clases
+        # Retornamos las clases en un formato serializable y útil para el Front
+        clases = []
+        for clase in docente_db.clases:
+            clases.append(
+                {
+                    "id": clase.id,
+                    "materia": clase.materia,
+                    "horario": clase.horario,
+                    "qr": clase.qr,
+                    "docente": f"{docente_db.nombre} {docente_db.apellido}".strip(),
+                    "student_count": len(clase.estudiantes or []),
+                }
+            )
+        return clases
+    except HTTPException:
+        raise
+
     except Exception:
         raise HTTPException(
             status_code=400, detail="Error al intentar consultar las clases"

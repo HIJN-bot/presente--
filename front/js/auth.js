@@ -22,9 +22,16 @@ const Auth = (() => {
   }
 
   function saveSession({ token, role, user }) {
+    const normalizedUser = user ? {
+      ...user,
+      name: user.name ?? user.nombre ?? '',
+      last_name: user.last_name ?? user.apellido ?? '',
+      email: user.email ?? '',
+    } : null;
+
     localStorage.setItem(KEYS.TOKEN, token);
     localStorage.setItem(KEYS.ROLE,  role);
-    localStorage.setItem(KEYS.USER,  JSON.stringify(user));
+    localStorage.setItem(KEYS.USER,  JSON.stringify(normalizedUser));
   }
 
   function clearSession() {
@@ -37,7 +44,7 @@ const Auth = (() => {
   function requireAuth() {
     if (!isLoggedIn()) {
       const here = encodeURIComponent(window.location.pathname + window.location.search);
-      window.location.href = `/login.html?redirect=${here}`;
+      window.location.href = `/pages/login.html?redirect=${here}`;
       return false;
     }
     return true;
@@ -56,8 +63,8 @@ const Auth = (() => {
   function redirectToDashboard() {
     const role = getRole();
     window.location.href = role === 'teacher'
-      ? '/dashboard/teacher.html'
-      : '/dashboard/student.html';
+      ? '/pages/dashboard/teacher.html'
+      : '/pages/dashboard/student.html';
   }
 
   /* ── Logout ── */
@@ -83,7 +90,7 @@ const Auth = (() => {
     // Si el servidor devuelve 401, la sesión caducó
     if (response.status === 401) {
       clearSession();
-      window.location.href = '/login.html';
+      window.location.href = '/pages/login.html';
       return null;
     }
 
@@ -96,12 +103,12 @@ const Auth = (() => {
   ── */
   const ENDPOINTS = {
     teacher: {
-      login:    '/api/teachers/login',      // POST { email, password }
-      register: '/api/teachers/register',   // POST { name, last_name, email, password }
+      login:    '/api/docentes/login',      // POST { email, contrasena }
+      register: '/api/docentes/registro',   // POST { nombre, apellido, email, contrasena }
     },
     student: {
-      login:    '/api/students/login',
-      register: '/api/students/register',
+      login:    '/api/estudiantes/login',
+      register: '/api/estudiantes/registro',
     },
   };
 
@@ -110,35 +117,41 @@ const Auth = (() => {
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, contrasena: password }),
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-      return { ok: false, message: data.message || 'Credenciales incorrectas.' };
+      return { ok: false, message: data.detail || data.message || 'Credenciales incorrectas.' };
     }
 
-    // Se espera: { token, user: { id, name, last_name, email, ... } }
-    saveSession({ token: data.token, role, user: data.user });
+    saveSession({ token: data.token, role: data.role || role, user: data.user });
     return { ok: true };
   }
 
   async function register({ role, ...fields }) {
     const url = ENDPOINTS[role].register;
+    const payload = {
+      nombre: fields.name,
+      apellido: fields.last_name,
+      email: fields.email,
+      contrasena: fields.password,
+    };
+
     const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(fields),
+      body: JSON.stringify(payload),
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-      return { ok: false, message: data.message || 'Error al registrarse.' };
+      return { ok: false, message: data.detail || data.message || 'Error al registrarse.' };
     }
 
-    saveSession({ token: data.token, role, user: data.user });
+    saveSession({ token: data.token, role: data.role || role, user: data.user });
     return { ok: true };
   }
 

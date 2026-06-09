@@ -13,7 +13,7 @@ from app.models.usuarios import usuario_model as um
 
 # Definimos la funcion para validar que el email que estamos registrando no este en la Base de Datos
 def validar_email(
-    email_ingresado: EmailStr, modelo_usuario: um.Usuario, db: Session
+    email_ingresado: EmailStr, modelo_usuario: type[um.Usuario], db: Session
 ) -> bool:
     # Definimos la query con el parametro del email y buscando coincidencias
     query = select(modelo_usuario).where(modelo_usuario.email == email_ingresado)

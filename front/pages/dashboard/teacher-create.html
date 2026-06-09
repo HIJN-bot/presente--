@@ -1,6 +1,3 @@
-# pages/dashboard/teacher-create.html
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -306,29 +303,52 @@
 
       const className = form.class_name.value.trim();
       const date = form.date.value;
-      const room = form.room.value.trim();
       const startTime = form.start_time.value;
-      const endTime = form.end_time.value;
+      const user = Auth.getUser();
 
-      if (!className || !date || !room || !startTime || !endTime) {
+      if (!className || !date || !startTime) {
         showError('Completa todos los campos obligatorios.');
+        return;
+      }
+
+      if (!user?.email) {
+        showError('No se pudo identificar al docente autenticado.');
         return;
       }
 
       setLoading(true);
 
-      // Simulación temporal hasta conectar backend
-      setTimeout(() => {
+      try {
+        const horario = new Date(`${date}T${startTime}:00`).toISOString();
+        const res = await Auth.authFetch(
+          `/api/clases/creacion?email_docente=${encodeURIComponent(user.email)}`,
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              materia: className,
+              horario,
+            }),
+          }
+        );
+
+        if (!res) return;
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.detail || data.message || 'No se pudo crear la clase.');
+        }
 
         showSuccess('Clase creada correctamente.');
-
         setLoading(false);
 
         setTimeout(() => {
           window.location.href = './teacher-classes.html';
         }, 1200);
 
-      }, 1000);
+      } catch (error) {
+        showError(error.message || 'No se pudo crear la clase.');
+        setLoading(false);
+      }
 
     });
 
@@ -358,4 +378,3 @@
 
 </body>
 </html>
-```

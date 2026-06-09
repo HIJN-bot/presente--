@@ -80,6 +80,9 @@ async def registrar_asistencia(
         # Retornamos el mensaje de exito
         return {"mensaje": "Asistencia registrada exitosamente"}
     # Manejamos la excepcion en caso que haya ocurrido un error
+    except HTTPException:
+        raise
+
     except Exception:
         raise HTTPException(
             status_code=400, detail="Ha ocurrido un error, intentelo de nuevo"

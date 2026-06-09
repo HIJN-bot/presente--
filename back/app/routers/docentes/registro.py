@@ -18,6 +18,7 @@ from app.database import get_db
 
 # Importamos los servicios de autentificacion, crear hash, crear usuario, validar email y crear la respuesta
 from app.services.usuarios.auth_service import generar_hash
+from app.services.usuarios.auth_service import generar_token
 from app.services.usuarios.crear_hash import hashear_contrasena
 from app.services.usuarios.validar_email import validar_email
 from app.services.usuarios.crear_usuario import crear_usuario
@@ -52,7 +53,7 @@ async def registrar_docente(
         # Creamos el ORM del docente
         docente = dm.Docente(**datos_docente)
         # Validamos mediante el email que el docente no este registrado
-        if not validar_email(docente.email, docente, db):
+        if not validar_email(docente.email, dm.Docente, db):
             raise HTTPException(
                 status_code=409, detail="Este correo electronico ya esta registrado"
             )
@@ -68,11 +69,18 @@ async def registrar_docente(
             apellido=docente.apellido,
             email=docente.email,
         )
-        # Retornamos el docente creado
-        return respuesta_usuario
+        # Retornamos el docente creado y un token opaco para la sesión del Front
+        return {
+            "token": generar_token("teacher", docente.email),
+            "role": "teacher",
+            "user": respuesta_usuario.model_dump(),
+        }
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=f"Datos invalidos: {str({e})}")
+
+    except HTTPException:
+        raise
 
     except Exception:
         raise HTTPException(

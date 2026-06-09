@@ -6,7 +6,7 @@ from app.schemas.usuarios import estudiante_schema as es
 from app.models.usuarios import estudiante_model as em
 
 # Imprtamos la funcion de verificar el hash, obtener la Base de datos y crear el schema para la respuesta
-from app.services.usuarios.auth_service import verificar_hash
+from app.services.usuarios.auth_service import verificar_hash, generar_token
 from app.services.usuarios.respuesta_usuario import crear_respuesta
 from app.database import get_db
 
@@ -16,6 +16,8 @@ from sqlalchemy import select
 # Imprtamos de SQLAlchemy las sesiones
 from sqlalchemy.orm import Session
 
+from app.schemas.usuarios.usuario_schema import UsuarioLogin
+
 # Instanciamos el router para este endpoit
 router: APIRouter = APIRouter()
 
@@ -23,7 +25,7 @@ router: APIRouter = APIRouter()
 # Definimos el endpoint y su metodo HTTP
 @router.post("/estudiantes/login", status_code=200)
 async def logear_estudiante(
-    informacion_estudiante: es.EstudianteCreado, db: Session = Depends(get_db)
+    informacion_estudiante: UsuarioLogin, db: Session = Depends(get_db)
 ):
     """
     Definimos la funcion del endpoint, que sera la encargada de validar el inicio de sesion:
@@ -58,7 +60,14 @@ async def logear_estudiante(
         )
 
         # Retornamos el schema de respuesta del usuario creado
-        return estudiante_logeado
+        return {
+            "token": generar_token("student", estudiante_db.email),
+            "role": "student",
+            "user": estudiante_logeado.model_dump(),
+        }
+
+    except HTTPException:
+        raise
 
     except Exception:
         raise HTTPException(status_code=400, detail="Fallo en el inicio de sesion")

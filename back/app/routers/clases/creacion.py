@@ -3,6 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 
 # Imoprtamos de SQLAlchemy las sesiones
 from sqlalchemy.orm import Session
+from pydantic import EmailStr
 
 # Importamos de SQLAlchemy select para las consultas
 from sqlalchemy import select
@@ -17,7 +18,7 @@ from app.services.qr.manager_qr import ManagerQr
 from app.schemas.usuarios.estudiante_schema import EstudianteCreado
 
 # Imprtamos el schema de las clases
-from app.schemas.clases.clase_schema import ClaseCreada, ClaseRespuesta
+from app.schemas.clases.clase_schema import ClaseCreada
 
 # Importamos el schema del docente
 from app.schemas.usuarios.docente_schema import DocenteCreado
@@ -42,7 +43,7 @@ router: APIRouter = APIRouter()
 @router.post("/clases/creacion", status_code=201)
 async def crear_clase(
     informacion_clase: ClaseCreada,
-    informacion_docente: DocenteCreado,
+    email_docente: EmailStr,
     db: Session = Depends(get_db),
 ):
     """
@@ -60,7 +61,7 @@ async def crear_clase(
         # Instanciamos el ManagerQr
         manager_qr: ManagerQr = ManagerQr()
         # Creamos la consulta para obtener el docente de la base de datos
-        query = select(Docente).where(Docente.email == informacion_docente.email)
+        query = select(Docente).where(Docente.email == email_docente)
         # Iniciamos la consulta
         docente_db: Docente = db.execute(query).scalar_one_or_none()
         # Revisamos si se encontro el docente
@@ -91,7 +92,8 @@ async def crear_clase(
         db.refresh(docente_db)
         # Creamos el QR para asignarlo a su clase
         qr = manager_qr.crear_qr(
-            clase_id=clase.id, endpoint=f"/asistencia?clase_id={clase.id}"
+            clase_id=clase.id,
+            endpoint=f"/pages/attendance.html?clase_id={clase.id}",
         )
         # Asignamos el QR a la clase
         clase.qr = qr.qr_image
@@ -102,16 +104,17 @@ async def crear_clase(
         # Refrescamos despues del commit
         db.refresh(clase)
         # Creamos el schema de respuesta para el enviarlo al Front-End
-        clase_respuesta: ClaseRespuesta = ClaseRespuesta(
-            materia=clase.materia,
-            horario=clase.horario,
-            docente_id=clase.docente_id,
-            docente=clase.docente,
-            estudiantes=clase.estudiantes,
-            id=clase.id,
-            qr=clase.qr,
-        )
-        # Retornamos la instancia de la clase creada (puedes  retornar el modelo o un schema de respuesta)
-        return clase_respuesta
+        # Retornamos un payload serializable y fácil de consumir desde el Front
+        return {
+            "id": clase.id,
+            "materia": clase.materia,
+            "horario": clase.horario,
+            "docente_id": clase.docente_id,
+            "docente_email": docente_db.email,
+            "qr": clase.qr,
+        }
+    except HTTPException:
+        raise
+
     except Exception:
         raise HTTPException(status_code=400, detail="Error al intentar crear la clase")

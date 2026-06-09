@@ -37,9 +37,23 @@ async def consultar_registro(id_clase: int, db: Session = Depends(get_db)):
             raise HTTPException(
                 status_code=404, detail="No se encontro la clase que esta consultando"
             )
-        # Retornamos la lista de los estudiantes
-        return {"asistencia_estudiantes": clase.estudiantes}
+        # Retornamos la lista de los estudiantes en formato serializable
+        return {
+            "id_clase": clase.id,
+            "asistencia_estudiantes": [
+                {
+                    "id": estudiante.id,
+                    "nombre": estudiante.nombre,
+                    "apellido": estudiante.apellido,
+                    "email": estudiante.email,
+                }
+                for estudiante in clase.estudiantes
+            ],
+        }
     # Capturamos cualquier excepcion que pueda presentarse
+    except HTTPException:
+        raise
+
     except Exception:
         raise HTTPException(
             status_code=404, detail="Ha ocurrido un error, intentelo de nuevo"
