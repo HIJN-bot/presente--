@@ -28,7 +28,7 @@ class ManagerQr:
         - Asignamos al atributo de la URL el valor de la nueva URL a la que apuntara el QR
         """
         # Obtenemos la URL base del Front desde variables de entorno (.env o sistema)
-        FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://127.0.0.1:5500")
+        FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://localhost:5173")
         url_endpoint = FRONTEND_BASE_URL.rstrip("/") + endpoint
         # Retornamos la URL final despues de haber concatenado con el endpoint al que debe estar asociado el QR
         self.url_endpoint = url_endpoint
