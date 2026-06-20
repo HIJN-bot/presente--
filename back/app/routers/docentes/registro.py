@@ -77,12 +77,13 @@ async def registrar_docente(
         }
 
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=f"Datos invalidos: {str({e})}")
+        raise HTTPException(status_code=400, detail=f"Datos invalidos: {str(e)}")
 
     except HTTPException:
         raise
 
-    except Exception:
-        raise HTTPException(
-            status_code=400, detail="Fallo en el registro, intentelo de nuevo"
-        )
+    except Exception as e:
+        import traceback
+        print(f"ERROR EN REGISTRO DE DOCENTE: {str(e)}")
+        print(traceback.format_exc())
+        raise HTTPException(status_code=400, detail=f"Error: {str(e)}")

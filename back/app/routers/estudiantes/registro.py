@@ -72,13 +72,12 @@ async def registrar_estudiante(
         }
 
     except ValueError as e:
-        # Si hay error de validación
         raise HTTPException(status_code=400, detail=f"Datos inválidos: {str(e)}")
     except HTTPException:
         raise
 
     except Exception as e:
-        # Si hay error en la base de datos (ej: email duplicado)
-        raise HTTPException(
-            status_code=400, detail="No se pudo registrar al estudiante"
-        )
+        import traceback
+        print(f"ERROR EN REGISTRO DE ESTUDIANTE: {str(e)}")
+        print(traceback.format_exc())
+        raise HTTPException(status_code=400, detail=f"Error: {str(e)}")
