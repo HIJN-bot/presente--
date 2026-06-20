@@ -4,6 +4,7 @@ import Login from './pages/Login'
 import Registro from './pages/Registro'
 import PanelEstudiante from './pages/PanelEstudiante'
 import PanelDocente from './pages/PanelDocente'
+import Asistencia from './pages/Asistencia'
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/registro" element={<Registro />} />
         <Route path="/estudiante" element={<PanelEstudiante />} />
         <Route path="/docente" element={<PanelDocente />} />
+        <Route path='/asistencia' element={<Asistencia />} />
       </Routes>
     </BrowserRouter>
   )
