@@ -67,13 +67,22 @@ export default function PanelDocente() {
     }
 
     const registroAsistencia = async (idClase) => {
-        const response = await obtenerDatos(consultarAsistencia + '?id_clase=' + idClase)
-        if (!response || !response.asistencia_estudiantes) {
-            console.error("Ha ocurrido un error a la hora de consultar la asistencia de la clase")
-            return
+        try {
+            const url = consultarAsistencia + '?id_clase=' + idClase + '&email_docente=' + usuario.email
+            const response = await fetch(url)
+            if (!response.ok) {
+                throw new Error('Error al obtener asistencia')
+            }
+            const data = await response.json()
+            if (!data || !data.asistencia_estudiantes) {
+                console.error("Ha ocurrido un error a la hora de consultar la asistencia de la clase")
+                return
+            }
+            setAsistencia(data)
+            setClaseSeleccionada(idClase)
+        } catch (error) {
+            console.error("Error:", error)
         }
-        setAsistencia(response)
-        setClaseSeleccionada(idClase)
     }
 
     useEffect(() => {
