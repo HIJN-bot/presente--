@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import API_BASE_URL from '../config'
 
 export default function Asistencia() {
-    const rutaAsistencia = "http://127.0.0.1:8000/api/asistencia/registro"
+    const rutaAsistencia = `${API_BASE_URL}/api/asistencia/registro`
     const usuarioString = localStorage.getItem('user')
     const usuario = usuarioString ? JSON.parse(usuarioString) : null
     const navigate = useNavigate()

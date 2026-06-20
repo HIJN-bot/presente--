@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import API_BASE_URL from '../config'
 
 export default function PanelDocente() {
-    const consultarClase = "http://127.0.0.1:8000/api/clases/consultar"
-    const consultarAsistencia = "http://127.0.0.1:8000/api/asistencia/consulta"
-    const crearClase = "http://127.0.0.1:8000/api/clases/creacion"
+    const consultarClase = `${API_BASE_URL}/api/clases/consultar`
+    const consultarAsistencia = `${API_BASE_URL}/api/asistencia/consulta`
+    const crearClase = `${API_BASE_URL}/api/clases/creacion`
 
     const [activeView, setActiveView] = useState('clases')
     const [claseSeleccionada, setClaseSeleccionada] = useState(null)

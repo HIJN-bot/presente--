@@ -1,12 +1,13 @@
 //Importamos userState
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import API_BASE_URL from '../config'
 
 export default function Login() {
     const navigate = useNavigate()
     //Definimos como constantes los endpoints del registro
-    const registroEstudiante = "http://127.0.0.1:8000/api/estudiantes/login"
-    const registroDocente = "http://127.0.0.1:8000/api/docentes/login"
+    const registroEstudiante = `${API_BASE_URL}/api/estudiantes/login`
+    const registroDocente = `${API_BASE_URL}/api/docentes/login`
     //Definimos el estado sobre el tipo de usuario
     const [esDocente, setEsDocente] = useState(false)
     //Definimos los valores iniciales de los datos necesarios para el login
