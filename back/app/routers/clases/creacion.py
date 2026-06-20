@@ -93,7 +93,7 @@ async def crear_clase(
         # Creamos el QR para asignarlo a su clase
         qr = manager_qr.crear_qr(
             clase_id=clase.id,
-            endpoint=f"/pages/attendance.html?clase_id={clase.id}",
+            endpoint=f"/asistencia?clase_id={clase.id}",
         )
         # Asignamos el QR a la clase
         clase.qr = qr.qr_image

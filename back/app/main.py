@@ -1,6 +1,10 @@
 # Importamos de fastapi la clase FastAPI para isntanciar la aplicacion
 from fastapi import FastAPI
 
+# Importamos de fastapi la configuracion del CORS
+
+from fastapi.middleware.cors import CORSMiddleware
+
 # Importamos el router de registro de estudiantes
 from app.routers.estudiantes import registro as registro_estudiantes
 
@@ -33,6 +37,14 @@ app: FastAPI = FastAPI(
     title="Presente", description="Sistema de registro por QR", version="0.1.0"
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Montamos los routers de estudiantes en la aplicacion
 app.include_router(registro_estudiantes.router, prefix="/api", tags=["estudiantes"])
 app.include_router(login_estudiantes.router, prefix="/api", tags=["estudiantes"])
@@ -46,7 +58,7 @@ app.include_router(consultar_clase.router, prefix="/api", tags=["clases"])
 app.include_router(enviar_qr.router, prefix="/api", tags=["qr"])
 # Montamos los routers de la asistencia en la aplicacion
 app.include_router(registrar_asistencia.router, prefix="/api", tags=["asistencia"])
-app.include_router(consultar_asistencia.router, prefix="/api", tags=["asistencia"])
+app.include_router(consultar_asistencia.router, prefix="/api"   , tags=["asistencia"])
 
 
 # Funcion principal de la aplicacion
