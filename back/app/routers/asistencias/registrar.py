@@ -51,6 +51,9 @@ async def registrar_asistencia(
         )
         # Ejecutamos la consulta de la clase
         clase: Clase = db.execute(query_clase).scalar_one_or_none()
+        # Forzamos el refresh para cargar la relacion de estudiantes
+        if clase:
+            db.refresh(clase)
         # Verificamos que se haya encontrado la clase con ese id
         if clase is None:
             raise HTTPException(
