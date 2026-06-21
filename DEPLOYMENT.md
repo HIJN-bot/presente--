@@ -169,7 +169,7 @@ DB_PASSWORD=GenerarContraseñaSegura123!@#
 
 # Usar HTTPS en producción
 API_BASE_URL=https://tu-dominio.com
-VITE_API_BASE_URL=https://tu-dominio.com
+BACKEND_URL=https://presente-backend-jvq5.onrender.com
 
 # Desactivar debug
 ENV=production
@@ -280,11 +280,14 @@ docker-compose restart postgres
 ### El frontend no puede conectar al backend
 
 ```bash
-# Verificar VITE_API_BASE_URL en .env
-cat .env | grep VITE_API_BASE_URL
+# Verificar BACKEND_URL en .env
+cat .env | grep BACKEND_URL
 
 # Ver logs del nginx
 docker-compose logs frontend
+
+# Verificar que la URL está bien inyectada en index.html
+docker-compose exec frontend cat /usr/share/nginx/html/index.html | grep -A2 "__BACKEND_URL__"
 ```
 
 ### Puerto ya en uso
