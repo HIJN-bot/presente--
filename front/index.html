@@ -1,10 +1,23 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>front</title>
+    <title>Presente - Sistema de Asistencia</title>
+    <script>
+      // Inyectar URL de API dinámicamente basada en el dominio actual
+      window.API_BASE_URL = (() => {
+        // Si está en Render o producción
+        if (window.location.hostname.includes('onrender.com')) {
+          return window.location.origin.replace('frontend', 'backend');
+        }
+        // Si está en localhost
+        return 'http://localhost:8000';
+      })();
+
+      console.log('API_BASE_URL configurada:', window.API_BASE_URL);
+    </script>
   </head>
   <body>
     <div id="root"></div>
