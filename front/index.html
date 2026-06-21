@@ -6,9 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Presente - Sistema de Asistencia</title>
     <script>
-      // Inyectar URL de API - configurada por entrypoint.sh en tiempo de ejecución
-      window.API_BASE_URL = window.__BACKEND_URL__ || 'http://localhost:8000';
-      console.log('API_BASE_URL configurada:', window.API_BASE_URL);
+      // Cargar configuración desde archivo generado por entrypoint.sh (sincrónico)
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', '/config.json', false);
+        xhr.send();
+        if (xhr.status === 200) {
+          const config = JSON.parse(xhr.responseText);
+          window.API_BASE_URL = config.API_BASE_URL;
+          console.log('API_BASE_URL configurada desde config.json:', window.API_BASE_URL);
+        } else {
+          throw new Error('Status: ' + xhr.status);
+        }
+      } catch (err) {
+        console.warn('No se pudo cargar config.json, usando fallback localhost:', err);
+        window.API_BASE_URL = 'http://localhost:8000';
+      }
     </script>
   </head>
   <body>
