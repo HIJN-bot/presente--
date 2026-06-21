@@ -46,7 +46,7 @@ app.add_middleware(
         "http://127.0.0.1",
         "http://127.0.0.1:80",
         "http://127.0.0.1:5173",
-        "https://present-mvp.onrender.com",  # Placeholder Render
+        "https://presente-frontend.onrender.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
