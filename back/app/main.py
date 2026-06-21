@@ -37,17 +37,25 @@ app: FastAPI = FastAPI(
     title="Presente", description="Sistema de registro por QR", version="0.1.0"
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
+# Función para validar orígenes dinámicamente
+def is_allowed_origin(origin: str) -> bool:
+    if origin in [
         "http://localhost",
         "http://localhost:80",
         "http://localhost:5173",
         "http://127.0.0.1",
         "http://127.0.0.1:80",
         "http://127.0.0.1:5173",
-        "https://presente-frontend.onrender.com",
-    ],
+    ]:
+        return True
+    # Permitir cualquier origen de Render (*.onrender.com)
+    if origin and origin.endswith(".onrender.com"):
+        return True
+    return False
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?|https?://.*\.onrender\.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
