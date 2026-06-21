@@ -6,8 +6,12 @@ if [ -z "$BACKEND_URL" ]; then
   export BACKEND_URL="https://presente-backend-jvq5.onrender.com"
 fi
 
-# Inyectar la URL del backend en index.html
-sed -i "s|__BACKEND_URL__|${BACKEND_URL}|g" /usr/share/nginx/html/index.html
+# Crear archivo de configuración que el frontend puede cargar
+cat > /usr/share/nginx/html/config.json <<EOF
+{
+  "API_BASE_URL": "${BACKEND_URL}"
+}
+EOF
 
 # Iniciar nginx
 exec nginx -g "daemon off;"
