@@ -6,6 +6,7 @@ export default function PanelDocente() {
     const consultarClase = `${API_BASE_URL}/api/clases/consultar`
     const consultarAsistencia = `${API_BASE_URL}/api/asistencia/consulta`
     const crearClase = `${API_BASE_URL}/api/clases/creacion`
+    const eliminarClaseUrl = `${API_BASE_URL}/api/clases/eliminar`
 
     const [activeView, setActiveView] = useState('clases')
     const [claseSeleccionada, setClaseSeleccionada] = useState(null)
@@ -86,6 +87,14 @@ export default function PanelDocente() {
         }
     }
 
+    const eliminarClase = async (url, idClase) => {
+        await fetch(`${url}?clase_id=${idClase}`, {
+            method: 'DELETE',
+        })
+        setClases(prev => prev.filter(c => c.id !== idClase))
+        alert('Clase eliminada con exito')
+    }
+
     useEffect(() => {
         const cargarClases = async () => {
             const response = await obtenerDatos(consultarClase)
@@ -112,31 +121,28 @@ export default function PanelDocente() {
                     <nav className='space-y-3 flex-1'>
                         <button
                             onClick={() => setActiveView('clases')}
-                            className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 ${
-                                activeView === 'clases'
+                            className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 ${activeView === 'clases'
                                     ? 'bg-teal-500 text-white shadow-lg'
                                     : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                            }`}
+                                }`}
                         >
                             Clases programadas
                         </button>
                         <button
                             onClick={() => setActiveView('registro')}
-                            className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 ${
-                                activeView === 'registro'
+                            className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 ${activeView === 'registro'
                                     ? 'bg-teal-500 text-white shadow-lg'
                                     : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                            }`}
+                                }`}
                         >
                             Registro de clases
                         </button>
                         <button
                             onClick={() => setActiveView('crear')}
-                            className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 ${
-                                activeView === 'crear'
+                            className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 ${activeView === 'crear'
                                     ? 'bg-teal-500 text-white shadow-lg'
                                     : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                            }`}
+                                }`}
                         >
                             Crear clase
                         </button>
@@ -156,6 +162,12 @@ export default function PanelDocente() {
                                             <h3 className='text-xl font-bold text-teal-400 mb-2'>{clase.materia}</h3>
                                             <p className='text-gray-300 mb-1'>{new Date(clase.horario).toLocaleString('es-ES')}</p>
                                             <p className='text-gray-400 text-sm mb-4'>{clase.student_count} estudiantes</p>
+                                            <button
+                                                onClick={() => eliminarClase(eliminarClaseUrl, clase.id)}
+                                                className='mb-4 w-full py-2 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition-all duration-300'
+                                            >
+                                                Eliminar clase
+                                            </button>
                                             <div className='bg-slate-600 p-4 rounded-lg flex justify-center'>
                                                 <img src={`data:image/png;base64,${clase.qr}`} alt="QR" className='w-40 h-40' />
                                             </div>
