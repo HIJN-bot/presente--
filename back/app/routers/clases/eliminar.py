@@ -18,7 +18,7 @@ router = APIRouter()
 
 
 # Definimos el endpoint
-@router.delete("clases/eliminar", status_code=200)
+@router.delete("/clases/eliminar", status_code=200)
 async def eliminar_clase(clase_id: int, db: Session = Depends(get_db)):
     """
     La funcion eliminar_clase se encarga de borrar el registro de una clase en la base de datos:
