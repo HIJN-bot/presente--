@@ -1,16 +1,73 @@
-# React + Vite
+# 🌐 front/
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend del sistema Presente. SPA construida con React y Vite, con estilos en Tailwind CSS.
 
-Currently, two official plugins are available:
+## 📁 Estructura
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```
+front/
+├── src/
+│   ├── App.jsx              # Configuración de rutas (react-router-dom)
+│   ├── main.jsx             # Entry point de React
+│   ├── config.js            # URL del backend (leída desde window.API_BASE_URL)
+│   ├── pages/               # Vistas principales
+│   │   ├── Inicio.jsx       # Landing page
+│   │   ├── Login.jsx        # Login de docente y estudiante
+│   │   ├── Registro.jsx     # Registro de usuarios
+│   │   ├── PanelDocente.jsx # Panel con clases, QR, asistencia y crear clase
+│   │   ├── PanelEstudiante.jsx # Panel del estudiante con historial
+│   │   └── Asistencia.jsx   # Página de registro de asistencia vía QR
+│   ├── components/          # Componentes reutilizables
+│   ├── hooks/               # Custom hooks
+│   └── utils/               # Funciones de utilidad
+├── index.html               # HTML base (inyecta window.API_BASE_URL en runtime)
+├── vite.config.js           # Configuración de Vite
+├── tailwind.config.js       # Configuración de Tailwind
+└── package.json
+```
 
-## React Compiler
+## 📦 Dependencias principales
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Paquete | Para qué se usa |
+|---------|-----------------|
+| `react` 19 | Framework de UI |
+| `react-dom` 19 | Renderizado en el DOM |
+| `react-router-dom` 7 | Navegación entre páginas |
+| `tailwindcss` 4 | Estilos utilitarios |
+| `vite` 8 | Bundler y servidor de desarrollo |
 
-## Expanding the ESLint configuration
+## 🚀 Cómo correr en desarrollo
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```bash
+npm install
+npm run dev
+```
+
+El servidor queda en `http://localhost:5173`. El frontend espera que el backend esté corriendo en `http://localhost:8000`.
+
+## 🔑 Cómo funciona la URL del backend
+
+`src/config.js` lee `window.API_BASE_URL`. Ese valor se inyecta en `index.html` antes de servir la página.
+
+- **Desarrollo**: por defecto cae a `http://localhost:8000`
+- **Producción (Render)**: Render inyecta la variable `VITE_BACKEND_URL` en build time
+
+## 🗺️ Páginas
+
+| Ruta | Archivo | Descripción |
+|------|---------|-------------|
+| `/` | `Inicio.jsx` | Landing page con descripción del sistema |
+| `/login` | `Login.jsx` | Login de docente y estudiante |
+| `/registro` | `Registro.jsx` | Registro de nuevos usuarios |
+| `/panel-docente` | `PanelDocente.jsx` | Panel principal del docente |
+| `/panel-estudiante` | `PanelEstudiante.jsx` | Panel del estudiante |
+| `/asistencia` | `Asistencia.jsx` | Registro de asistencia (destino del QR) |
+
+## 🛠️ Scripts disponibles
+
+```bash
+npm run dev      # Servidor de desarrollo con HMR
+npm run build    # Build de producción → genera dist/
+npm run preview  # Preview del build de producción
+npm run lint     # ESLint
+```
