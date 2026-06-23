@@ -30,7 +30,6 @@ class Clase(Base):
         secondary=asistencia_clase_estudiante,
         backref="clases",
         cascade="all, delete",
-        passive_deletes=True,
     )
     # QR de la clase
     qr = Column(Text, nullable=True)
