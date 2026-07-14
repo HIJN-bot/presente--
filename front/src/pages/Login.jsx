@@ -61,7 +61,11 @@ export default function Login() {
 
             alert('¡Inicio de sesión exitoso!')
 
-            if (respuesta.role === 'teacher') {
+            const idClase = localStorage.getItem('idClase')
+            if (idClase != null) {
+                localStorage.removeItem('idClase')
+                navigate(`/asistencia?clase_id=${idClase}`)
+            } else if (respuesta.role === 'teacher') {
                 navigate('/docente')
             } else {
                 navigate('/estudiante')

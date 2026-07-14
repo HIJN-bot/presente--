@@ -17,6 +17,7 @@ export default function Asistencia() {
 
         const idClase = searchParams.get('clase_id')
         if (!usuario) {
+            localStorage.setItem('idClase', idClase)
             navigate('/login')
             return
         }
@@ -48,7 +49,7 @@ export default function Asistencia() {
     }
 
     return (
-        <div className='min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4'>
+        <div className='min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4'>
             <div className='max-w-md w-full'>
                 {estado === 'cargando' && (
                     <div className='bg-slate-700 rounded-lg p-8 border border-slate-600 text-center'>
