@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import API_BASE_URL from '../config'
+import { leerMensajeDeError } from '../errores'
 
 export default function Login() {
     const navigate = useNavigate()
@@ -13,7 +14,10 @@ export default function Login() {
     //Definimos los valores iniciales de los datos necesarios para el login
     const [email, setEmail] = useState('')
     const [contrasena, setContrasena] = useState('')
+    //Mensaje de error que se muestra sobre el formulario cuando el login falla
+    const [error, setError] = useState('')
     //Declaramos las funciones para consumir la API de registro dependiendo si es del docente o el estudiante
+    // Devolvemos siempre un objeto: { datos } si salio bien, { error } si no.
     const registroUsuario = async (url, datosParaEnviar) => {
         try {
             const respuesta = await fetch(url, {
@@ -25,14 +29,15 @@ export default function Login() {
             });
 
             if (!respuesta.ok) {
-                throw new Error(`Error en el servidor: ${respuesta.status}`)
+                return { error: await leerMensajeDeError(respuesta) }
             }
 
-            const resultado = await respuesta.json()
-            return resultado
+            return { datos: await respuesta.json() }
 
         } catch (error) {
+            // Aqui solo caen los fallos de red: el servidor no respondio
             console.error("Error al enviar los datos:", error.message)
+            return { error: 'No se pudo conectar con el servidor. Revisa tu conexión.' }
         }
     }
 
@@ -44,37 +49,32 @@ export default function Login() {
             "email": email,
             "contrasena": contrasena
         }
-        let respuesta
+        //Limpiamos el error anterior antes de volver a intentarlo
+        setError('')
 
         //Validamos el estado de 'esDocente'
-        if (esDocente) {
-            respuesta = await registroUsuario(registroDocente, datosUsuario)
+        const url = esDocente ? registroDocente : registroEstudiante
+        const { datos, error } = await registroUsuario(url, datosUsuario)
+
+        //Si el inicio de sesion fallo mostramos el motivo y no seguimos
+        if (error) {
+            setError(error)
+            return
         }
-        else {
-            respuesta = await registroUsuario(registroEstudiante, datosUsuario)
-        }
 
-        if (respuesta) {
-            localStorage.setItem('token', respuesta.token)
-            localStorage.setItem('role', respuesta.role)
-            localStorage.setItem('user', JSON.stringify(respuesta.user))
+        localStorage.setItem('token', datos.token)
+        localStorage.setItem('role', datos.role)
+        localStorage.setItem('user', JSON.stringify(datos.user))
 
-            alert('¡Inicio de sesión exitoso!')
-
-            const idClase = localStorage.getItem('idClase')
-            if (idClase != null) {
-                localStorage.removeItem('idClase')
-                navigate(`/asistencia?clase_id=${idClase}`)
-            } else if (respuesta.role === 'teacher') {
-                navigate('/docente')
-            } else {
-                navigate('/estudiante')
-            }
+        const idClase = localStorage.getItem('idClase')
+        if (idClase != null) {
+            localStorage.removeItem('idClase')
+            navigate(`/asistencia?clase_id=${idClase}`)
+        } else if (datos.role === 'teacher') {
+            navigate('/docente')
         } else {
-            alert('Error en el inicio de sesión. Intenta de nuevo.')
+            navigate('/estudiante')
         }
-        //Log de respuesta para verificar
-        console.log("Respuesta del login", respuesta)
     }
     return (
         <div className='min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900'>
@@ -117,6 +117,16 @@ export default function Login() {
                             Docente
                         </button>
                     </div>
+
+                    {/*Aviso de error: aparece solo cuando el inicio de sesion falla*/}
+                    {error && (
+                        <div
+                            role='alert'
+                            className='mb-4 px-4 py-3 bg-red-900/40 border border-red-500/50 rounded-lg text-red-200 text-sm'
+                        >
+                            {error}
+                        </div>
+                    )}
 
                     {/*Formulario de login*/}
                     <form onSubmit={handleSubmit} className='space-y-4'>
