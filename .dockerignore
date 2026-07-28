@@ -1,0 +1,40 @@
+# Evita que archivos locales entren al contexto de build de Docker.
+# Critico para los .env: sin esto, "COPY front ." mete tu .env.local en la
+# imagen y Vite hornea esa URL dentro del bundle de produccion.
+
+# ===== Secretos y configuracion local =====
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# ===== Dependencias (se instalan dentro de la imagen) =====
+front/node_modules/
+back/venv/
+back/env/
+
+# ===== Artefactos de build =====
+front/dist/
+front/.vite/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+
+# ===== Control de versiones y editor =====
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# ===== Pruebas y cobertura =====
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ===== Documentacion y scripts que no necesita la imagen =====
+docs/
+*.md
+deploy.sh
+deploy.ps1
