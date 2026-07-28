@@ -5,20 +5,25 @@ from sqlalchemy import create_engine
 # Tambien importamos la clase de la que van a heredar los modelos
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-# Importamos la funcoin que nos permite cargar las variables de entorno
-from dotenv import load_dotenv
-import os
+# Importamos la configuracion centralizada, que ya cargo el .env y valido las variables
+from app.config import DATABASE_URL
 
-# Cargamos el .env
-load_dotenv()
-
-# Asignamos la direccion de la base de datos
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql://usuario:contrasena@localhost:5432/a_db"
+# Creamos la conexion con la base de datos usando la URL.
+# Los parametros del pool importan cuando la base de datos es remota (Supabase):
+# - pool_pre_ping: antes de usar una conexion del pool comprueba que siga viva.
+#   Sin esto, la primera consulta despues de un rato inactivo falla con
+#   "server closed the connection unexpectedly", porque el pooler ya la cerro.
+# - pool_recycle: descarta conexiones con mas de 5 minutos, antes de que las
+#   cierre el otro extremo.
+# - pool_size / max_overflow: el plan gratuito tiene un limite bajo de conexiones
+#   concurrentes, asi que mantenemos el pool pequeno.
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+    pool_recycle=300,
+    pool_size=5,
+    max_overflow=2,
 )
-
-# Creamos la conexion con la base de datos usando la URL
-engine = create_engine(DATABASE_URL)
 # Establecemos la configuracion para crear las sesiones para las consultas a la base de datos
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
