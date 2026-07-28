@@ -41,17 +41,20 @@ async def logear_docente(
             )
             # Ejecutamos la consulta
             docente_db: dm.Docente = db.execute(query).scalar_one_or_none()
+            # Verificamos usuario y contraseña devolviendo siempre el mismo error.
+            # Distinguir "no existe" de "contraseña incorrecta" le permitiria a
+            # cualquiera averiguar que correos estan registrados probando el endpoint.
+            credenciales_invalidas = HTTPException(
+                status_code=401, detail="Correo o contraseña incorrectos"
+            )
             # Verificamos que el usuario con ese email registrado exista en la Base de Datos
             if docente_db is None:
-                raise HTTPException(
-                    status_code=404,
-                    detail="No se encontro un usuario para esa direccion de correo electronico",
-                )
+                raise credenciales_invalidas
             # Verificamos que la contraseña sea correcta
             if not verificar_hash(
                 informacion_docente.contrasena, docente_db.hash_contrasena
             ):
-                raise HTTPException(status_code=400, detail="Contraseña incorrecta")
+                raise credenciales_invalidas
             # Creamos el schema de respuesta
             docente_logeado = crear_respuesta(
                 nombre=docente_db.nombre,

@@ -1,6 +1,12 @@
 # Importamos de FastAPI el router, HTTPException y Depends
 from fastapi import APIRouter, HTTPException, Depends
 
+# Importamos logging para dejar el detalle de los errores en el servidor
+import logging
+
+# Logger de este modulo, usado cuando algo falla de forma inesperada
+logger = logging.getLogger(__name__)
+
 # Importamos el schema de docente
 from app.schemas.usuarios import docente_schema as ds
 
@@ -76,14 +82,17 @@ async def registrar_docente(
             "user": respuesta_usuario.model_dump(),
         }
 
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=f"Datos invalidos: {str(e)}")
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Los datos enviados no son validos")
 
     except HTTPException:
         raise
 
-    except Exception as e:
-        import traceback
-        print(f"ERROR EN REGISTRO DE DOCENTE: {str(e)}")
-        print(traceback.format_exc())
-        raise HTTPException(status_code=400, detail=f"Error: {str(e)}")
+    except Exception:
+        # Registramos el detalle completo en el log del servidor, pero al cliente
+        # le devolvemos un mensaje generico: el texto de la excepcion puede
+        # revelar nombres de tablas, columnas o la cadena de conexion.
+        logger.exception("Error inesperado al registrar un docente")
+        raise HTTPException(
+            status_code=400, detail="No se pudo completar el registro"
+        )
