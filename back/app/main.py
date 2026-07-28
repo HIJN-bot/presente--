@@ -5,6 +5,9 @@ from fastapi import FastAPI
 
 from fastapi.middleware.cors import CORSMiddleware
 
+# Importamos la configuracion de CORS desde el modulo centralizado
+from app.config import ALLOWED_ORIGINS, ALLOWED_ORIGIN_REGEX
+
 # Importamos el router de registro de estudiantes
 from app.routers.estudiantes import registro as registro_estudiantes
 
@@ -41,26 +44,14 @@ app: FastAPI = FastAPI(
 )
 
 
-# Función para validar orígenes dinámicamente
-def is_allowed_origin(origin: str) -> bool:
-    if origin in [
-        "http://localhost",
-        "http://localhost:80",
-        "http://localhost:5173",
-        "http://127.0.0.1",
-        "http://127.0.0.1:80",
-        "http://127.0.0.1:5173",
-    ]:
-        return True
-    # Permitir cualquier origen de Render (*.onrender.com)
-    if origin and origin.endswith(".onrender.com"):
-        return True
-    return False
-
-
+# Configuramos el CORS a partir de las variables de entorno.
+# ALLOWED_ORIGINS son los origenes exactos y ALLOWED_ORIGIN_REGEX un patron opcional
+# para familias de dominios (Render, dev tunnels). Para autorizar un origen nuevo
+# se edita el .env, no este archivo.
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?|https?://.*\.onrender\.com|https://.*\.devtunnels\.ms",
+    allow_origins=ALLOWED_ORIGINS,
+    allow_origin_regex=ALLOWED_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -7,7 +7,9 @@ services:
     container_name: presente-postgres
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-SntpostGre2026}
+      # Sin valor por defecto a proposito: docker compose aborta con este mensaje
+      # si la clave no esta en el .env, en vez de arrancar con una clave conocida.
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?definela en tu archivo .env (ver .env.example)}
       POSTGRES_DB: ${DB_NAME:-presente}
       POSTGRES_INITDB_ARGS: "--encoding=UTF8"
     ports:
@@ -29,8 +31,13 @@ services:
       dockerfile: Dockerfile.backend
     container_name: presente-backend
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-SntpostGre2026}@postgres:5432/${DB_NAME:-presente}}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://${DB_USER:-postgres}:${DB_PASSWORD:?definela en tu archivo .env}@postgres:5432/${DB_NAME:-presente}}
       API_BASE_URL: ${API_BASE_URL:-http://localhost:8000}
+      # URL del frontend que codifica el QR; el backend la exige al arrancar.
+      FRONTEND_BASE_URL: ${FRONTEND_BASE_URL:-http://localhost:5173}
+      # Configuracion de CORS leida por app/config.py
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost,http://localhost:80,http://localhost:5173}
+      ALLOWED_ORIGIN_REGEX: ${ALLOWED_ORIGIN_REGEX:-}
       ENV: ${ENV:-production}
     ports:
       - "${BACKEND_PORT:-8000}:8000"

@@ -1,6 +1,6 @@
 
-# Importamos os para acceder a variables de entorno, como la URL base de la API.
-import os
+# Importamos la URL base del frontend desde la configuracion centralizada.
+from app.config import FRONTEND_BASE_URL
 # Importamos base64 para codificar la imagen del QR en texto, útil para enviar por red o guardar en la base de datos.
 import base64
 # Importamos qrcode para generar el código QR a partir de un string (usualmente una URL).
@@ -22,13 +22,13 @@ class ManagerQr:
     def generar_url_qr(self, endpoint: str):
         """
         Este metodo se encarga de construir la URL del QR apuntando al endpoint necesario:
-        - Obtenemos la URL del archivo de configuracion
-        - Revisamos que efectivamente esa URL exista
+        - Tomamos la URL base del frontend desde la configuracion (app/config.py)
         - Concatenamos la URL del QR con el string del endpoint
         - Asignamos al atributo de la URL el valor de la nueva URL a la que apuntara el QR
+
+        Para apuntar el QR a otro entorno (local, dev tunnel o produccion) se cambia
+        FRONTEND_BASE_URL en el .env, nunca este archivo.
         """
-        # Obtenemos la URL base del Front desde variables de entorno (.env o sistema)
-        FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "https://presente-frontend.onrender.com")
         url_endpoint = FRONTEND_BASE_URL.rstrip("/") + endpoint
         # Retornamos la URL final despues de haber concatenado con el endpoint al que debe estar asociado el QR
         self.url_endpoint = url_endpoint
