@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import API_BASE_URL from '../config'
+import { leerMensajeDeError } from '../errores'
 
 export default function Registro() {
     const navigate = useNavigate()
@@ -15,7 +16,12 @@ export default function Registro() {
     const [apellido, setApellido] = useState('')
     const [email, setEmail] = useState('')
     const [contrasena, setContrasena] = useState('')
+    //Mensaje de error que se muestra sobre el formulario cuando el registro falla
+    const [error, setError] = useState('')
     //Declaramos las funciones para consumir la API de registro dependiendo si es del docente o el estudiante
+    // Devolvemos siempre un objeto: { datos } si salio bien, { error } si no.
+    // Asi el motivo real del fallo llega hasta el usuario en lugar de perderse
+    // en la consola.
     const registroUsuario = async (url, datosParaEnviar) => {
         try {
             const respuesta = await fetch(url, {
@@ -27,14 +33,15 @@ export default function Registro() {
             });
 
             if (!respuesta.ok) {
-                throw new Error(`Error en el servidor: ${respuesta.status}`)
+                return { error: await leerMensajeDeError(respuesta) }
             }
 
-            const resultado = await respuesta.json()
-            return resultado
+            return { datos: await respuesta.json() }
 
         } catch (error) {
+            // Aqui solo caen los fallos de red: el servidor no respondio
             console.error("Error al enviar los datos:", error.message)
+            return { error: 'No se pudo conectar con el servidor. Revisa tu conexión.' }
         }
     }
 
@@ -48,37 +55,32 @@ export default function Registro() {
             "email": email,
             "contrasena": contrasena
         }
-        let respuesta
+        //Limpiamos el error anterior antes de volver a intentarlo
+        setError('')
 
         //Validamos el estado de 'esDocente'
-        if (esDocente) {
-            respuesta = await registroUsuario(registroDocente, datosUsuario)
+        const url = esDocente ? registroDocente : registroEstudiante
+        const { datos, error } = await registroUsuario(url, datosUsuario)
+
+        //Si el registro fallo mostramos el motivo concreto y no seguimos
+        if (error) {
+            setError(error)
+            return
         }
-        else {
-            respuesta = await registroUsuario(registroEstudiante, datosUsuario)
-        }
 
-        if (respuesta) {
-            localStorage.setItem('token', respuesta.token)
-            localStorage.setItem('role', respuesta.role)
-            localStorage.setItem('user', JSON.stringify(respuesta.user))
+        localStorage.setItem('token', datos.token)
+        localStorage.setItem('role', datos.role)
+        localStorage.setItem('user', JSON.stringify(datos.user))
 
-            alert('¡Cuenta creada exitosamente!')
-
-            const idClase = localStorage.getItem('idClase')
-            if (idClase != null) {
-                localStorage.removeItem('idClase')
-                navigate(`/asistencia?clase_id=${idClase}`)
-            } else if (respuesta.role === 'teacher') {
-                navigate('/docente')
-            } else {
-                navigate('/estudiante')
-            }
+        const idClase = localStorage.getItem('idClase')
+        if (idClase != null) {
+            localStorage.removeItem('idClase')
+            navigate(`/asistencia?clase_id=${idClase}`)
+        } else if (datos.role === 'teacher') {
+            navigate('/docente')
         } else {
-            alert('Error en el registro. Intenta de nuevo.')
+            navigate('/estudiante')
         }
-        //Log de respuesta para verificar
-        console.log("Respuesta del registro:", respuesta)
     }
     return (
         <div className='min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900'>
@@ -121,6 +123,16 @@ export default function Registro() {
                             Docente
                         </button>
                     </div>
+
+                    {/*Aviso de error: aparece solo cuando el registro falla*/}
+                    {error && (
+                        <div
+                            role='alert'
+                            className='mb-4 px-4 py-3 bg-red-900/40 border border-red-500/50 rounded-lg text-red-200 text-sm'
+                        >
+                            {error}
+                        </div>
+                    )}
 
                     {/*Formulario de registro*/}
                     <form onSubmit={handleSubmit} className='space-y-4'>
@@ -172,8 +184,13 @@ export default function Registro() {
                                 onChange={(e) => setContrasena(e.target.value)}
                                 placeholder="••••••••"
                                 required
+                                /* Mismos limites que valida el Back-End, para que el
+                                   navegador avise antes de enviar el formulario */
+                                minLength={8}
+                                maxLength={72}
                                 className='w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:ring-opacity-20 transition-all'
                             />
+                            <p className='mt-2 text-xs text-gray-500'>Mínimo 8 caracteres</p>
                         </div>
 
                         {/* Boton de envio del formulario */}
