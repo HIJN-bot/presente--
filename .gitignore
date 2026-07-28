@@ -43,7 +43,8 @@ front/.nuxt/
 # ===== DOCKER =====
 .docker/
 docker-compose.override.yml
-.dockerignore
+# .dockerignore NO se ignora: define que archivos entran al contexto de build
+# (entre ellos los .env), asi que debe viajar con el repositorio.
 
 # ===== LOGS =====
 *.log
