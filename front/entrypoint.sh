@@ -1,9 +1,14 @@
 #!/bin/sh
 set -e
 
-# Usar la variable BACKEND_URL si está definida, sino usar la por defecto para Render
+# BACKEND_URL define a que backend apunta el frontend en runtime.
+# Es obligatoria: si no esta definida preferimos abortar el arranque antes que
+# servir un frontend que apunta silenciosamente al backend equivocado.
 if [ -z "$BACKEND_URL" ]; then
-  export BACKEND_URL="https://presente-backend-jvq5.onrender.com"
+  echo "ERROR: la variable de entorno BACKEND_URL no esta definida." >&2
+  echo "Definela en el servicio (Render) o en docker-compose.yml antes de arrancar." >&2
+  echo "Ejemplo: BACKEND_URL=https://presente-backend-<sufijo>.onrender.com" >&2
+  exit 1
 fi
 
 # Crear archivo de configuración que el frontend puede cargar

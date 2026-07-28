@@ -6,21 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Presente - Sistema de Asistencia</title>
     <script>
-      // Cargar configuración desde archivo generado por entrypoint.sh (sincrónico)
+      // Cargamos la configuración de runtime que genera entrypoint.sh dentro del
+      // contenedor de nginx (sincrónico, antes de que arranque la app).
+      // En desarrollo con Vite este archivo no existe: en ese caso no definimos
+      // nada y src/config.js resuelve la URL desde VITE_API_BASE_URL.
+      // El valor por defecto vive en src/config.js, no aquí, para tener un solo
+      // lugar donde se decide a qué backend apunta el frontend.
       try {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', '/config.json', false);
         xhr.send();
         if (xhr.status === 200) {
-          const config = JSON.parse(xhr.responseText);
-          window.API_BASE_URL = config.API_BASE_URL;
-          console.log('API_BASE_URL configurada desde config.json:', window.API_BASE_URL);
-        } else {
-          throw new Error('Status: ' + xhr.status);
+          window.API_BASE_URL = JSON.parse(xhr.responseText).API_BASE_URL;
         }
       } catch (err) {
-        console.warn('No se pudo cargar config.json, usando fallback localhost:', err);
-        window.API_BASE_URL = 'http://localhost:8000';
+        // Sin config.json: es lo normal en desarrollo, config.js se encarga.
       }
     </script>
   </head>
