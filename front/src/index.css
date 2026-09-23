@@ -1,1 +1,66 @@
 @import "tailwindcss";
+
+/* El modo oscuro se activa con la clase .dark en <html> (la aplica useTema
+   y el script de index.html), no con la preferencia del sistema. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Tokens de color. Los componentes solo usan estos nombres (bg-fondo,
+   text-texto, border-borde...), así que la paleta se cambia únicamente aquí.
+   Valores provisionales en escala de grises hasta definir la paleta final. */
+:root {
+  color-scheme: light;
+  --fondo: #f4f4f5;
+  --superficie: #ffffff;
+  --superficie-alt: #e4e4e7;
+  --texto: #18181b;
+  --texto-suave: #52525b;
+  --borde: #d4d4d8;
+  --acento: #27272a;
+  --acento-hover: #3f3f46;
+  --acento-texto: #ffffff;
+  --peligro: #b91c1c;
+  --peligro-hover: #991b1b;
+  --exito: #15803d;
+}
+
+.dark {
+  color-scheme: dark;
+  --fondo: #09090b;
+  --superficie: #18181b;
+  --superficie-alt: #27272a;
+  --texto: #fafafa;
+  --texto-suave: #a1a1aa;
+  --borde: #3f3f46;
+  --acento: #e4e4e7;
+  --acento-hover: #ffffff;
+  --acento-texto: #18181b;
+  --peligro: #f87171;
+  --peligro-hover: #fca5a5;
+  --exito: #4ade80;
+}
+
+@theme inline {
+  --color-fondo: var(--fondo);
+  --color-superficie: var(--superficie);
+  --color-superficie-alt: var(--superficie-alt);
+  --color-texto: var(--texto);
+  --color-texto-suave: var(--texto-suave);
+  --color-borde: var(--borde);
+  --color-acento: var(--acento);
+  --color-acento-hover: var(--acento-hover);
+  --color-acento-texto: var(--acento-texto);
+  --color-peligro: var(--peligro);
+  --color-peligro-hover: var(--peligro-hover);
+  --color-exito: var(--exito);
+}
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-fondo text-texto font-sans antialiased;
+  }
+}
