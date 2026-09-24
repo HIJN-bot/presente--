@@ -15,6 +15,7 @@ from alembic import context
 from app.models.usuarios import estudiante_model
 from app.models.usuarios import docente_model
 from app.models.clases import clase_model
+from app.models.notas import nota_model
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
