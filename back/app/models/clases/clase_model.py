@@ -24,12 +24,14 @@ class Clase(Base):
     docente_id = Column(Integer, ForeignKey("docentes.id"))
     # Nombre del docente
     docente = relationship("Docente", back_populates="clases")
-    # Coleccion de estudiantes, referenciamos al modelo del estudiante
+    # Coleccion de estudiantes, referenciamos al modelo del estudiante.
+    # Al borrar la clase SQLAlchemy elimina sus filas de la tabla de asistencia.
+    # No usamos cascade="delete": en una relacion muchos-a-muchos borraria
+    # tambien las cuentas de los estudiantes que asistieron.
     estudiantes = relationship(
         "Estudiante",
         secondary=asistencia_clase_estudiante,
         backref="clases",
-        cascade="all, delete",
     )
     # QR de la clase
     qr = Column(Text, nullable=True)
