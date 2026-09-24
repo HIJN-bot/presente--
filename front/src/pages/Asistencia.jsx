@@ -1,17 +1,43 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import API_BASE_URL from '../config'
+import { obtenerUsuario } from '../sesion'
+import PaginaPublica from '../components/PaginaPublica'
+import Tarjeta from '../components/Tarjeta'
+import Boton from '../components/Boton'
 
 export default function Asistencia() {
     const rutaAsistencia = `${API_BASE_URL}/api/asistencia/registro`
-    const usuarioString = localStorage.getItem('user')
-    const usuario = usuarioString ? JSON.parse(usuarioString) : null
+    const usuario = obtenerUsuario()
     const navigate = useNavigate()
     const [searchParams] = useSearchParams()
     const [estado, setEstado] = useState('cargando')
     const intentoRef = useRef(false)
 
     useEffect(() => {
+        const registrarAsistencia = async (idClase, emailEstudiante) => {
+            try {
+                const response = await fetch(rutaAsistencia, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        'id_clase': idClase,
+                        'email_estudiante': emailEstudiante
+                    })
+                })
+
+                if (response.ok) {
+                    setEstado('exito')
+                    setTimeout(() => navigate('/estudiante'), 2000)
+                } else {
+                    setEstado('error')
+                }
+            } catch (error) {
+                console.error('Error:', error)
+                setEstado('error')
+            }
+        }
+
         if (intentoRef.current) return
         intentoRef.current = true
 
@@ -24,68 +50,39 @@ export default function Asistencia() {
         registrarAsistencia(idClase, usuario.email)
     }, [])
 
-    const registrarAsistencia = async (idClase, emailEstudiante) => {
-        try {
-            const response = await fetch(rutaAsistencia, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    'id_clase': idClase,
-                    'email_estudiante': emailEstudiante
-                })
-            })
-
-            if (response.ok) {
-                const data = await response.json()
-                setEstado('exito')
-                setTimeout(() => navigate('/estudiante'), 2000)
-            } else {
-                setEstado('error')
-            }
-        } catch (error) {
-            console.error('Error:', error)
-            setEstado('error')
-        }
-    }
-
     return (
-        <div className='min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center px-4'>
-            <div className='max-w-md w-full'>
-                {estado === 'cargando' && (
-                    <div className='bg-slate-700 rounded-lg p-8 border border-slate-600 text-center'>
-                        <div className='mb-6'>
-                            <div className='inline-block'>
-                                <div className='w-16 h-16 border-4 border-slate-600 border-t-teal-500 rounded-full animate-spin'></div>
-                            </div>
-                        </div>
-                        <h1 className='text-3xl font-bold text-white mb-2'>Registrando Asistencia</h1>
-                        <p className='text-gray-400'>Por favor espera...</p>
-                    </div>
-                )}
+        <PaginaPublica>
+            <main className='flex justify-center px-4 py-16'>
+                <Tarjeta className='w-full max-w-md text-center' aria-live='polite'>
+                    {estado === 'cargando' && (
+                        <>
+                            <div className='mx-auto mb-6 size-16 animate-spin rounded-full border-4 border-borde border-t-acento' />
+                            <h2 className='font-display text-3xl font-bold'>Registrando asistencia</h2>
+                            <p className='mt-2 text-texto-suave'>Por favor espera...</p>
+                        </>
+                    )}
 
-                {estado === 'exito' && (
-                    <div className='bg-slate-700 rounded-lg p-8 border border-slate-600 text-center'>
-                        <div className='mb-6 text-5xl font-bold text-teal-400'>✓</div>
-                        <h1 className='text-3xl font-bold text-teal-400 mb-2'>Asistencia Registrada</h1>
-                        <p className='text-gray-400 mb-4'>Tu asistencia ha sido registrada exitosamente.</p>
-                        <p className='text-gray-500 text-sm'>Redirigiendo en 2 segundos...</p>
-                    </div>
-                )}
+                    {estado === 'exito' && (
+                        <>
+                            <div className='mx-auto mb-6 grid size-16 place-items-center rounded-full bg-exito/15 text-4xl font-bold text-exito'>✓</div>
+                            <h2 className='font-display text-3xl font-bold'>Asistencia registrada</h2>
+                            <p className='mt-2 text-texto-suave'>Tu asistencia ha sido registrada exitosamente.</p>
+                            <p className='mt-4 text-sm text-texto-suave'>Redirigiendo en 2 segundos...</p>
+                        </>
+                    )}
 
-                {estado === 'error' && (
-                    <div className='bg-slate-700 rounded-lg p-8 border border-slate-600 text-center'>
-                        <div className='mb-6 text-5xl font-bold text-red-400'>!</div>
-                        <h1 className='text-3xl font-bold text-red-400 mb-2'>Error</h1>
-                        <p className='text-gray-400 mb-6'>Hubo un problema al registrar tu asistencia.</p>
-                        <button
-                            onClick={() => navigate('/estudiante')}
-                            className='w-full py-3 bg-teal-500 hover:bg-teal-600 text-white font-semibold rounded-lg transition-all duration-300'
-                        >
-                            Volver al Panel
-                        </button>
-                    </div>
-                )}
-            </div>
-        </div>
+                    {estado === 'error' && (
+                        <>
+                            <div className='mx-auto mb-6 grid size-16 place-items-center rounded-full bg-peligro/15 text-4xl font-bold text-peligro'>!</div>
+                            <h2 className='font-display text-3xl font-bold'>Error</h2>
+                            <p className='mt-2 mb-6 text-texto-suave'>Hubo un problema al registrar tu asistencia.</p>
+                            <Boton onClick={() => navigate('/estudiante')} className='w-full py-3'>
+                                Volver al panel
+                            </Boton>
+                        </>
+                    )}
+                </Tarjeta>
+            </main>
+        </PaginaPublica>
     )
 }
