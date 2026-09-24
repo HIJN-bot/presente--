@@ -1,6 +1,20 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import API_BASE_URL from '../config'
+import { obtenerUsuario, cerrarSesion as borrarSesion } from '../sesion'
+import PanelLayout from '../components/PanelLayout'
+import TituloSeccion from '../components/TituloSeccion'
+import TarjetaClase from '../components/TarjetaClase'
+import Tarjeta from '../components/Tarjeta'
+import CampoTexto from '../components/CampoTexto'
+import Boton from '../components/Boton'
+import Modal from '../components/Modal'
+
+const SECCIONES = [
+    { id: 'clases', etiqueta: 'Clases programadas' },
+    { id: 'registro', etiqueta: 'Registro clases' },
+    { id: 'crear', etiqueta: 'Crear clase' },
+]
 
 export default function PanelDocente() {
     const consultarClase = `${API_BASE_URL}/api/clases/consultar`
@@ -14,9 +28,11 @@ export default function PanelDocente() {
     const [clases, setClases] = useState([])
     const [materia, setMateria] = useState('')
     const [horario, setHorario] = useState('')
+    // Clase cuyo QR se muestra en el modal (null = modal cerrado)
+    const [claseQR, setClaseQR] = useState(null)
 
-    const usuario = JSON.parse(localStorage.getItem('user'))
-    const nombre = usuario.nombre
+    const usuario = obtenerUsuario()
+    const nombre = usuario?.nombre
     const navigate = useNavigate()
 
     const obtenerDatos = async (url) => {
@@ -63,8 +79,14 @@ export default function PanelDocente() {
         }
     }
 
+    // El formulario se envía con onSubmit para que el navegador valide los campos requeridos
+    const handleCrearClase = (e) => {
+        e.preventDefault()
+        registrarClase(crearClase, materia, horario)
+    }
+
     const cerrarSesion = () => {
-        localStorage.clear()
+        borrarSesion()
         navigate('/')
     }
 
@@ -105,174 +127,133 @@ export default function PanelDocente() {
         cargarClases()
     }, [])
 
+    const hayClases = clases && clases.length > 0
+    const materiaSeleccionada = clases?.find((c) => c.id === claseSeleccionada)?.materia
+
+    const sinClases = (
+        <p className='text-texto-suave'>Aún no tienes clases. Crea la primera desde «Crear clase».</p>
+    )
+
     return (
-        <div className='min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900'>
-            {/* Header */}
-            <header className='flex justify-between items-center px-8 py-6 border-b border-slate-700'>
-                <h1 className='text-4xl font-bold text-white'>Presente <span className='text-teal-400'>Docente</span></h1>
-                <button onClick={() => cerrarSesion()} className='px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-all duration-300'>Cerrar Sesión</button>
-            </header>
-
-            <div className='flex h-[calc(100vh-120px)]'>
-                {/* Sidebar */}
-                <aside className='w-64 bg-slate-800 border-r border-slate-700 p-6 flex flex-col'>
-                    <h2 className='text-xl font-bold text-white mb-8'>Bienvenido, <span className='text-teal-400'>{nombre}</span></h2>
-
-                    <nav className='space-y-3 flex-1'>
-                        <button
-                            onClick={() => setActiveView('clases')}
-                            className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 ${activeView === 'clases'
-                                    ? 'bg-teal-500 text-white shadow-lg'
-                                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                                }`}
-                        >
-                            Clases programadas
-                        </button>
-                        <button
-                            onClick={() => setActiveView('registro')}
-                            className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 ${activeView === 'registro'
-                                    ? 'bg-teal-500 text-white shadow-lg'
-                                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                                }`}
-                        >
-                            Registro de clases
-                        </button>
-                        <button
-                            onClick={() => setActiveView('crear')}
-                            className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-300 ${activeView === 'crear'
-                                    ? 'bg-teal-500 text-white shadow-lg'
-                                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                                }`}
-                        >
-                            Crear clase
-                        </button>
-                    </nav>
-                </aside>
-
-                {/* Main Content */}
-                <main className='flex-1 p-8 overflow-y-auto'>
-                    {/* Vista: Clases programadas */}
-                    {activeView === 'clases' && (
-                        <div>
-                            <h2 className='text-3xl font-bold text-white mb-8'>Tus Clases</h2>
-                            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                                {clases && clases.length > 0 ? (
-                                    clases.map((clase) => (
-                                        <div key={clase.id} className='bg-slate-700 rounded-lg p-6 border border-slate-600 hover:border-teal-500 transition-all duration-300'>
-                                            <h3 className='text-xl font-bold text-teal-400 mb-2'>{clase.materia}</h3>
-                                            <p className='text-gray-300 mb-1'>{new Date(clase.horario).toLocaleString('es-ES')}</p>
-                                            <p className='text-gray-400 text-sm mb-4'>{clase.student_count} estudiantes</p>
-                                            <button
-                                                onClick={() => eliminarClase(eliminarClaseUrl, clase.id)}
-                                                className='mb-4 w-full py-2 px-4 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold transition-all duration-300'
-                                            >
-                                                Eliminar clase
-                                            </button>
-                                            <div className='bg-slate-600 p-4 rounded-lg flex justify-center'>
-                                                <img src={`data:image/png;base64,${clase.qr}`} alt="QR" className='w-40 h-40' />
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <p className='text-gray-400 col-span-full'>No hay clases aún. ¡Crea una!</p>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Vista: Registro de asistencia */}
-                    {activeView === 'registro' && (
-                        <div>
-                            {claseSeleccionada === null ? (
-                                <>
-                                    <h2 className='text-3xl font-bold text-white mb-8'>Registro de Asistencia</h2>
-                                    <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                                        {clases && clases.length > 0 ? (
-                                            clases.map((clase) => (
-                                                <div key={clase.id} className='bg-slate-700 rounded-lg p-6 border border-slate-600 hover:border-teal-500 transition-all duration-300'>
-                                                    <h3 className='text-xl font-bold text-teal-400 mb-4'>{clase.materia}</h3>
-                                                    <button
-                                                        onClick={() => registroAsistencia(clase.id)}
-                                                        className='w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300'
-                                                    >
-                                                        Ver Asistencia
-                                                    </button>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <p className='text-gray-400'>No hay clases aún.</p>
-                                        )}
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    <div className='flex items-center gap-4 mb-8'>
-                                        <button
-                                            onClick={() => setClaseSeleccionada(null)}
-                                            className='px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-all duration-300'
-                                        >
-                                            ← Volver
-                                        </button>
-                                        <h2 className='text-3xl font-bold text-white'>Asistencia de la Clase</h2>
-                                    </div>
-
-                                    <div className='space-y-3'>
-                                        {asistencia.asistencia_estudiantes && asistencia.asistencia_estudiantes.length > 0 ? (
-                                            asistencia.asistencia_estudiantes.map((estudiante) => (
-                                                <div key={estudiante.id} className='bg-slate-700 rounded-lg p-4 border border-slate-600 hover:border-teal-500 transition-all duration-300'>
-                                                    <p className='text-teal-400 font-semibold'>{estudiante.nombre} {estudiante.apellido}</p>
-                                                    <p className='text-gray-400 text-sm'>{estudiante.email}</p>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <p className='text-gray-400'>No hay estudiantes registrados en esta clase.</p>
-                                        )}
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Vista: Crear clase */}
-                    {activeView === 'crear' && (
-                        <div>
-                            <h2 className='text-3xl font-bold text-white mb-8'>Crear Nueva Clase</h2>
-                            <form className='max-w-md bg-slate-700 rounded-lg p-8 border border-slate-600'>
-                                <div className='mb-6'>
-                                    <label className='block text-sm font-semibold text-gray-300 mb-3'>Nombre de la Materia</label>
-                                    <input
-                                        type='text'
-                                        value={materia}
-                                        onChange={(e) => setMateria(e.target.value)}
-                                        placeholder='Ej: Matemáticas'
-                                        required
-                                        className='w-full px-4 py-3 bg-slate-600 border border-slate-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:ring-opacity-20 transition-all'
-                                    />
-                                </div>
-
-                                <div className='mb-6'>
-                                    <label className='block text-sm font-semibold text-gray-300 mb-3'>Horario de la Clase</label>
-                                    <input
-                                        type='datetime-local'
-                                        value={horario}
-                                        onChange={(e) => setHorario(e.target.value)}
-                                        required
-                                        className='w-full px-4 py-3 bg-slate-600 border border-slate-500 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:ring-opacity-20 transition-all'
-                                    />
-                                </div>
-
-                                <button
-                                    type='button'
-                                    onClick={() => registrarClase(crearClase, materia, horario)}
-                                    className='w-full py-3 bg-linear-to-r from-teal-500 to-teal-600 text-white font-bold rounded-lg hover:from-teal-600 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl'
+        <PanelLayout
+            titulo='Presente docentes'
+            nombre={nombre}
+            secciones={SECCIONES}
+            seccionActiva={activeView}
+            onSeleccionar={setActiveView}
+            onCerrarSesion={cerrarSesion}
+        >
+            {/* Vista: Clases programadas */}
+            {activeView === 'clases' && (
+                <section>
+                    <TituloSeccion>Clases programadas</TituloSeccion>
+                    {hayClases ? (
+                        <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-3'>
+                            {clases.map((clase) => (
+                                <TarjetaClase
+                                    key={clase.id}
+                                    materia={clase.materia}
+                                    horario={clase.horario}
+                                    detalle={`${clase.student_count} estudiantes`}
                                 >
-                                    Crear Clase
-                                </button>
-                            </form>
+                                    <Boton onClick={() => setClaseQR(clase)}>Ver QR</Boton>
+                                    <Boton variante='peligro' onClick={() => eliminarClase(eliminarClaseUrl, clase.id)}>
+                                        Eliminar
+                                    </Boton>
+                                </TarjetaClase>
+                            ))}
                         </div>
+                    ) : sinClases}
+                </section>
+            )}
+
+            {/* Vista: Registro de asistencia */}
+            {activeView === 'registro' && (
+                <section>
+                    {claseSeleccionada === null ? (
+                        <>
+                            <TituloSeccion>Registro clases</TituloSeccion>
+                            {hayClases ? (
+                                <div className='grid gap-4 sm:grid-cols-2 xl:grid-cols-3'>
+                                    {clases.map((clase) => (
+                                        <TarjetaClase key={clase.id} materia={clase.materia} horario={clase.horario}>
+                                            <Boton onClick={() => registroAsistencia(clase.id)}>Asistencia</Boton>
+                                        </TarjetaClase>
+                                    ))}
+                                </div>
+                            ) : sinClases}
+                        </>
+                    ) : (
+                        <>
+                            <TituloSeccion
+                                accion={
+                                    <Boton variante='secundario' onClick={() => setClaseSeleccionada(null)}>
+                                        ← Volver
+                                    </Boton>
+                                }
+                            >
+                                Asistencia · {materiaSeleccionada}
+                            </TituloSeccion>
+
+                            {asistencia.asistencia_estudiantes && asistencia.asistencia_estudiantes.length > 0 ? (
+                                <ul className='space-y-3'>
+                                    {asistencia.asistencia_estudiantes.map((estudiante) => (
+                                        <Tarjeta as='li' key={estudiante.id} className='py-4 sm:py-4'>
+                                            <p className='font-semibold'>{estudiante.nombre} {estudiante.apellido}</p>
+                                            <p className='text-sm break-all text-texto-suave'>{estudiante.email}</p>
+                                        </Tarjeta>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className='text-texto-suave'>No hay estudiantes registrados en esta clase.</p>
+                            )}
+                        </>
                     )}
-                </main>
-            </div>
-        </div>
+                </section>
+            )}
+
+            {/* Vista: Crear clase */}
+            {activeView === 'crear' && (
+                <section>
+                    <TituloSeccion>Crear clase</TituloSeccion>
+                    <Tarjeta as='form' onSubmit={handleCrearClase} className='mx-auto flex max-w-md flex-col gap-4'>
+                        <CampoTexto
+                            etiqueta='Nombre clase'
+                            type='text'
+                            value={materia}
+                            onChange={(e) => setMateria(e.target.value)}
+                            placeholder='Ej: Matemáticas'
+                            required
+                        />
+                        <CampoTexto
+                            etiqueta='Hora / día'
+                            type='datetime-local'
+                            value={horario}
+                            onChange={(e) => setHorario(e.target.value)}
+                            required
+                        />
+                        <Boton type='submit' className='mt-2 self-center px-10'>Crear</Boton>
+                    </Tarjeta>
+                </section>
+            )}
+
+            <Modal abierto={claseQR !== null} onCerrar={() => setClaseQR(null)} titulo={claseQR ? `QR · ${claseQR.materia}` : 'QR'}>
+                {claseQR && (
+                    <div className='flex flex-col items-center gap-3'>
+                        {/* Fondo blanco fijo: el QR debe tener contraste para poder escanearse */}
+                        <div className='rounded-2xl bg-white p-4'>
+                            <img
+                                src={`data:image/png;base64,${claseQR.qr}`}
+                                alt={`Código QR de la clase ${claseQR.materia}`}
+                                className='size-60 max-w-full'
+                            />
+                        </div>
+                        <p className='text-center text-sm text-texto-suave'>
+                            Los estudiantes escanean este código para registrar su asistencia.
+                        </p>
+                    </div>
+                )}
+            </Modal>
+        </PanelLayout>
     )
 }
