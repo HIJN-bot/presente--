@@ -123,6 +123,42 @@ GET /api/asistencias/consultar?id_clase=<id>&email_docente=<email>
 ```
 Retorna la lista de estudiantes que registraron asistencia en la clase.
 
+### Historial de asistencia del estudiante
+```
+GET /api/asistencia/historial?email_estudiante=<email>
+```
+Retorna las clases en las que el estudiante registró asistencia, de la más reciente a la más antigua.
+
+**Respuesta:**
+```json
+[{ "id": 1, "materia": "string", "horario": "datetime", "docente": "string" }]
+```
+
+---
+
+## Notas del estudiante
+
+Notas personales y privadas: solo se consultan con el email de su autor.
+
+### Crear nota
+```
+POST /api/notas/creacion?email_estudiante=<email>
+```
+**Body:**
+```json
+{ "contenido": "string (1 a 500 caracteres, sin espacios en los extremos)" }
+```
+**Respuesta (201):**
+```json
+{ "id": 1, "contenido": "string", "fecha": "datetime con zona horaria" }
+```
+
+### Consultar notas
+```
+GET /api/notas/consultar?email_estudiante=<email>
+```
+Retorna las notas del estudiante, de la más reciente a la más antigua, con el mismo formato que la creación.
+
 ---
 
 ## Health check

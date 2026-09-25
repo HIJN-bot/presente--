@@ -28,11 +28,14 @@ presente/
 │   │   │   │   ├── docente_model.py
 │   │   │   │   ├── estudiante_model.py
 │   │   │   │   └── usuario_model.py
+│   │   │   ├── notas/
+│   │   │   │   └── nota_model.py                    # Notas personales del estudiante
 │   │   │   └── tablas/
 │   │   │       └── asistencia_clase_estudiante.py  # Tabla puente many-to-many
 │   │   ├── schemas/             # Pydantic schemas (validación entrada/salida)
 │   │   │   ├── clases/
 │   │   │   ├── asistencia/
+│   │   │   ├── notas/
 │   │   │   └── usuarios/
 │   │   ├── routers/             # Endpoints agrupados por dominio
 │   │   │   ├── clases/
@@ -99,9 +102,16 @@ asistencia_clase_estudiante
        ▼
 estudiantes
   id, nombre, email, password
+       │
+       │ one-to-many (ON DELETE CASCADE)
+       ▼
+notas
+  id, contenido, fecha, estudiante_id
 ```
 
-La relación entre `clase` y `estudiantes` es many-to-many a través de la tabla puente `asistencia_clase_estudiante`. SQLAlchemy gestiona el cascade: al eliminar una clase, se eliminan automáticamente sus registros de asistencia.
+La relación entre `clase` y `estudiantes` es many-to-many a través de la tabla puente `asistencia_clase_estudiante`. Al eliminar una clase, SQLAlchemy elimina automáticamente sus filas de la tabla puente; los estudiantes se conservan.
+
+Cada estudiante puede tener notas personales (`notas`). Si se elimina el estudiante, la base de datos elimina sus notas.
 
 ---
 

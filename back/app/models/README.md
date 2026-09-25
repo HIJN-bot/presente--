@@ -17,7 +17,19 @@ Tabla `clase`. Almacena las clases creadas por los docentes.
 
 Relaciones:
 - `docente` → `Docente` (many-to-one)
-- `estudiantes` → `Estudiante` (many-to-many vía `asistencia_clase_estudiante`, con `cascade="all, delete"` para que al borrar la clase se borren sus registros de asistencia)
+- `estudiantes` → `Estudiante` (many-to-many vía `asistencia_clase_estudiante`). Al borrar la clase SQLAlchemy elimina sus filas de asistencia. No lleva `cascade="delete"`, porque en many-to-many borraría también a los estudiantes.
+
+### `notas/nota_model.py`
+Tabla `notas`. Notas personales y privadas de cada estudiante.
+
+| Columna | Tipo | Descripción |
+|---------|------|-------------|
+| `id` | Integer PK | Identificador único |
+| `contenido` | Text | Texto de la nota |
+| `fecha` | DateTime con zona horaria | Fecha de publicación (la asigna la base de datos) |
+| `estudiante_id` | Integer FK → `estudiantes.id` | Autor. `ON DELETE CASCADE`: si se borra el estudiante se borran sus notas |
+
+Relación: `estudiante` → `Estudiante` (el estudiante accede a sus notas con `estudiante.notas`).
 
 ### `usuarios/docente_model.py`
 Tabla `docentes`. Usuarios con rol de docente.

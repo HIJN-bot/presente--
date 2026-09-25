@@ -33,12 +33,10 @@ Panel del estudiante sobre `PanelLayout` ("Presente estudiante"). Dos vistas:
 - **`asistencia`** — clases en las que el estudiante registró asistencia
 - **`notas`** — formulario "Deja una nota aquí" + notas publicadas
 
-Endpoints que consume (**pendientes de crear en el backend**):
+Endpoints que consume:
 - `GET /api/asistencia/historial?email_estudiante=...` → `[{ id, materia, horario, docente }]`
 - `GET /api/notas/consultar?email_estudiante=...` → `[{ id, contenido, fecha }]`
 - `POST /api/notas/creacion?email_estudiante=...` con `{ contenido }` → `{ id, contenido, fecha }`
-
-Mientras no existan, el panel muestra el mensaje de error del servidor en lugar de los datos.
 
 ### `Asistencia.jsx` ✅
 Página destino del QR. Lee `?clase_id=X` de la URL y registra automáticamente la asistencia del estudiante autenticado llamando a `POST /api/asistencia/registro`.

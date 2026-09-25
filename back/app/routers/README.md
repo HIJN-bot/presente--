@@ -18,7 +18,11 @@ routers/
 │   └── login.py       POST   /api/estudiantes/login
 ├── asistencias/
 │   ├── registrar.py   POST   /api/asistencia/registro
-│   └── consultar.py   GET    /api/asistencia/consultar
+│   ├── consultar.py   GET    /api/asistencia/consultar
+│   └── historial.py   GET    /api/asistencia/historial
+├── notas/
+│   ├── creacion.py    POST   /api/notas/creacion
+│   └── consultar.py   GET    /api/notas/consultar
 └── qr/
     └── enviar.py      GET    /api/qr/enviar
 ```
@@ -37,7 +41,7 @@ Devuelve todas las clases de un docente con su lista de estudiantes y el QR.
 - Query param: `email_docente`
 
 **`DELETE /api/clases/eliminar`**
-Elimina una clase y sus registros de asistencia (cascade).
+Elimina una clase y sus registros de asistencia. Los estudiantes que asistieron se conservan.
 - Query param: `clase_id`
 
 ### 👥 Docentes y Estudiantes
@@ -57,6 +61,23 @@ Registra la asistencia de un estudiante en una clase. Valida que la clase exista
 **`GET /api/asistencia/consultar`**
 Devuelve la lista de estudiantes que asistieron a una clase. Solo el docente dueño puede consultarla.
 - Query params: `id_clase`, `email_docente`
+
+**`GET /api/asistencia/historial`**
+Devuelve las clases en las que un estudiante registró asistencia (`id`, `materia`, `horario`, `docente`), de la más reciente a la más antigua.
+- Query param: `email_estudiante`
+
+### 🗒️ Notas
+
+Notas personales y privadas del estudiante.
+
+**`POST /api/notas/creacion`**
+Guarda una nota del estudiante y la devuelve con su `id` y `fecha`.
+- Query param: `email_estudiante`
+- Body: `NotaCreada` (`contenido`, de 1 a 500 caracteres)
+
+**`GET /api/notas/consultar`**
+Devuelve las notas del estudiante, de la más reciente a la más antigua.
+- Query param: `email_estudiante`
 
 ### 🔲 QR
 
