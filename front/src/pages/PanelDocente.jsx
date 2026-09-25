@@ -110,11 +110,19 @@ export default function PanelDocente() {
     }
 
     const eliminarClase = async (url, idClase) => {
-        await fetch(`${url}?clase_id=${idClase}`, {
-            method: 'DELETE',
-        })
-        setClases(prev => prev.filter(c => c.id !== idClase))
-        alert('Clase eliminada con exito')
+        try {
+            const response = await fetch(`${url}?clase_id=${idClase}`, {
+                method: 'DELETE',
+            })
+            if (!response.ok) {
+                throw new Error(`Error en la petición: ${response.status}`)
+            }
+            setClases(prev => prev.filter(c => c.id !== idClase))
+            alert('Clase eliminada con exito')
+        } catch (error) {
+            console.error('Hubo un problema con la petición:', error)
+            alert('Error al eliminar la clase')
+        }
     }
 
     useEffect(() => {
@@ -154,7 +162,7 @@ export default function PanelDocente() {
                                     key={clase.id}
                                     materia={clase.materia}
                                     horario={clase.horario}
-                                    detalle={`${clase.student_count} estudiantes`}
+                                    detalle={`${clase.student_count} ${clase.student_count === 1 ? 'estudiante' : 'estudiantes'}`}
                                 >
                                     <Boton onClick={() => setClaseQR(clase)}>Ver QR</Boton>
                                     <Boton variante='peligro' onClick={() => eliminarClase(eliminarClaseUrl, clase.id)}>
