@@ -10,9 +10,9 @@ Thumbs.db
 
 # ===== VARIABLES DE ENTORNO (SENSIBLES!) =====
 .env
-.env.local
-.env.*.local
-.env.production
+.env.*
+# Las plantillas sin valores reales si se versionan
+!.env.example
 
 # ===== PYTHON / BACKEND =====
 __pycache__/
