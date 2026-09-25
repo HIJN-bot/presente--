@@ -1,5 +1,6 @@
 # Stage 1: Build (if using Vite)
-FROM node:20-alpine AS builder
+# Node 24 (LTS): Vite 8 y Vitest 5 requieren Node >= 22.12
+FROM node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -19,7 +20,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Copy nginx config
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY front/nginx.conf /etc/nginx/nginx.conf
 
 # Copy built files from Vite dist folder
 COPY --from=builder /app/dist /usr/share/nginx/html
