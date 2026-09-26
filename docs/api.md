@@ -5,6 +5,24 @@ Documentación interactiva: `<base-url>/docs` (generada automáticamente por Fas
 
 ---
 
+## Autenticación
+
+El login y el registro devuelven un `token` (JWT firmado, válido por `TOKEN_EXPIRACION_HORAS`,
+12 h por defecto). El resto de endpoints lo exigen en la cabecera:
+
+```
+Authorization: Bearer <token>
+```
+
+- **401** — falta el token, fue alterado o expiró. El Front borra la sesión y lleva al login.
+- **403** — el token es válido pero el rol no corresponde (docente/estudiante) o los datos
+  pedidos son de otro usuario. Los parámetros `email_docente` / `email_estudiante` deben
+  coincidir con el usuario del token, y las clases solo las gestiona su docente.
+
+Endpoints públicos (sin token): registro y login de docentes y estudiantes, y `GET /`.
+
+---
+
 ## Estudiantes
 
 ### Registro

@@ -15,7 +15,7 @@ front/
 │   ├── index.css            # Tailwind, tokens de color y modo oscuro
 │   ├── config.js            # URL del backend
 │   ├── errores.js           # Traduce los errores del backend a mensajes legibles
-│   ├── sesion.js            # Leer usuario / cerrar sesión (sin borrar preferencias)
+│   ├── sesion.js            # Usuario, token y fetchConSesion (envía el token y maneja la sesión vencida)
 │   ├── pages/               # Vistas principales (ver pages/README.md)
 │   ├── hooks/
 │   │   ├── useTema.js       # Tema claro/oscuro persistido en localStorage['tema']
@@ -42,6 +42,8 @@ front/
 ## 🎨 Estilos y tema
 
 - Tailwind 4 se configura en `src/index.css` (`tailwind.config.js` no se usa).
+- El fondo es un **degradado vertical**: empieza en el color principal del tema (blanco en claro,
+  negro en oscuro: `--fondo`) y termina en morado (`--fondo-final`). El acento es morado.
 - Los colores son **tokens semánticos** (`bg-fondo`, `bg-superficie`, `text-texto`, `text-texto-suave`,
   `border-borde`, `bg-acento`, `text-peligro`...). Sus valores están en `:root` (claro) y `.dark` (oscuro)
   dentro de `index.css`: para cambiar la paleta solo se editan esas variables.
@@ -76,6 +78,13 @@ El servidor queda en `http://localhost:5173`. El frontend espera que el backend 
 - **Desarrollo**: por defecto cae a `http://localhost:8000`
 - **Producción (Render)**: Render inyecta la variable `VITE_BACKEND_URL` en build time
 
+## 🔐 Sesión
+
+Login y Registro guardan en `localStorage` el `token` (JWT), `role` y `user`. Las peticiones a
+endpoints protegidos se hacen con `fetchConSesion` (`src/sesion.js`), que agrega
+`Authorization: Bearer <token>`. Si el backend responde 401 (token vencido o inválido) borra la
+sesión y lleva a `/login`. Login y Registro usan `fetch` normal porque aún no hay token.
+
 ## 🗺️ Páginas
 
 | Ruta | Archivo | Descripción |
@@ -94,4 +103,18 @@ npm run dev      # Servidor de desarrollo con HMR
 npm run build    # Build de producción → genera dist/
 npm run preview  # Preview del build de producción
 npm run lint     # ESLint
+npm test         # Pruebas unitarias y de integración (Vitest + Testing Library, API simulada)
+npm run test:e2e # Pruebas end-to-end contra la API real (ver abajo)
+```
+
+## 🧪 Pruebas
+
+- `npm test` prueba las utilidades (`*.test.js`) y las páginas completas con la API simulada
+  (`src/pages/*.test.jsx`). Las utilidades comunes están en `src/test/`.
+- `npm run test:e2e` ejecuta `src/e2e/`: las páginas reales contra el backend real, que usa la base
+  de pruebas (`<nombre>_test`), nunca la de desarrollo:
+
+```bash
+back/venv/Scripts/python.exe back/tests/servidor_e2e.py        # terminal 1 (puerto 8001)
+E2E_API_URL=http://127.0.0.1:8001 npm run test:e2e              # terminal 2
 ```

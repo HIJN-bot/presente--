@@ -27,6 +27,15 @@ routers/
     └── enviar.py      GET    /api/qr/enviar
 ```
 
+## 🔐 Autenticación
+
+Salvo registro y login, todos los endpoints exigen `Authorization: Bearer <token>`.
+Se declara como dependencia en la firma del endpoint (ver `app/services/usuarios/usuario_actual.py`):
+
+- `Depends(requerir_docente)` / `Depends(requerir_estudiante)` — valida el token y el rol (401 / 403)
+- `verificar_propietario(email, usuario)` — 403 si el email de la petición (o el dueño de la clase)
+  no es el usuario del token
+
 ## 🔌 Endpoints
 
 ### 📚 Clases
@@ -50,7 +59,7 @@ Elimina una clase y sus registros de asistencia. Los estudiantes que asistieron 
 Registra un nuevo usuario. La contraseña se hashea con bcrypt antes de guardar.
 
 **`POST /api/docentes/login`** / **`POST /api/estudiantes/login`**
-Verifica credenciales y devuelve un token de sesión opaco.
+Verifica credenciales y devuelve el token de sesión (JWT firmado).
 
 ### 📝 Asistencia
 

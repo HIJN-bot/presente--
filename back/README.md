@@ -59,6 +59,26 @@ El servidor queda en `http://localhost:8000`. La documentación interactiva de l
 ```
 DATABASE_URL=postgresql://usuario:password@localhost:5432/presente
 FRONTEND_BASE_URL=http://localhost:5173
+SECRET_KEY=<clave aleatoria: python -c "import secrets; print(secrets.token_urlsafe(48))">
 ```
 
 `FRONTEND_BASE_URL` se usa para generar la URL que se codifica en el QR. En producción debe apuntar a la URL del frontend en Render.
+`SECRET_KEY` firma los tokens de sesión (JWT); nunca la subas al repositorio.
+
+## 🧪 Pruebas
+
+```bash
+pip install -r requirements-dev.txt   # pytest y httpx (solo desarrollo)
+pytest                                 # todas
+pytest tests/unit                      # unitarias (sin base de datos)
+pytest tests/integracion               # integración: API real contra PostgreSQL
+```
+
+- Las pruebas de integración usan una base **separada**: `TEST_DATABASE_URL` si está definida
+  o, si no, la de `DATABASE_URL` con el nombre `<nombre>_test` (se crea sola). Por seguridad
+  se niegan a correr si el nombre no termina en `_test`.
+- Al empezar ejecutan todas las migraciones hacia abajo y hacia arriba, y vacían las tablas
+  antes de cada prueba.
+- Usan una `SECRET_KEY` aleatoria generada en cada ejecución.
+- `tests/servidor_e2e.py` levanta la API contra esa misma base en el puerto 8001 para las
+  pruebas end-to-end del frontend (ver `front/README.md`).
