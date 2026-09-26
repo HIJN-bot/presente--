@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API_BASE_URL from '../config'
 import { leerMensajeDeError } from '../errores'
-import { obtenerUsuario, cerrarSesion as borrarSesion } from '../sesion'
+import { obtenerUsuario, cerrarSesion as borrarSesion, fetchConSesion } from '../sesion'
 import PanelLayout from '../components/PanelLayout'
 import TituloSeccion from '../components/TituloSeccion'
 import TarjetaClase from '../components/TarjetaClase'
@@ -16,10 +16,10 @@ const SECCIONES = [
     { id: 'notas', etiqueta: 'Notas' },
 ]
 
-// Hace la petición y devuelve siempre { datos } o { error }, igual que Login y Registro
+// Hace la petición con el token de sesión y devuelve siempre { datos } o { error }
 async function pedir(url, opciones) {
     try {
-        const respuesta = await fetch(url, opciones)
+        const respuesta = await fetchConSesion(url, opciones)
         if (!respuesta.ok) {
             return { error: await leerMensajeDeError(respuesta) }
         }

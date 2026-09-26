@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API_BASE_URL from '../config'
-import { obtenerUsuario, cerrarSesion as borrarSesion } from '../sesion'
+import { obtenerUsuario, cerrarSesion as borrarSesion, fetchConSesion } from '../sesion'
 import PanelLayout from '../components/PanelLayout'
 import TituloSeccion from '../components/TituloSeccion'
 import TarjetaClase from '../components/TarjetaClase'
@@ -37,7 +37,7 @@ export default function PanelDocente() {
 
     const obtenerDatos = async (url) => {
         try {
-            const response = await fetch(url + '?email_docente=' + usuario.email);
+            const response = await fetchConSesion(url + '?email_docente=' + usuario.email);
             if (!response.ok) {
                 throw new Error('Error al obtener los datos');
             }
@@ -51,7 +51,7 @@ export default function PanelDocente() {
 
     const registrarClase = async (url, materia, horario) => {
         try {
-            const response = await fetch(url + '?email_docente=' + usuario.email, {
+            const response = await fetchConSesion(url + '?email_docente=' + usuario.email, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -93,7 +93,7 @@ export default function PanelDocente() {
     const registroAsistencia = async (idClase) => {
         try {
             const url = consultarAsistencia + '?id_clase=' + idClase + '&email_docente=' + usuario.email
-            const response = await fetch(url)
+            const response = await fetchConSesion(url)
             if (!response.ok) {
                 throw new Error('Error al obtener asistencia')
             }
@@ -111,7 +111,7 @@ export default function PanelDocente() {
 
     const eliminarClase = async (url, idClase) => {
         try {
-            const response = await fetch(`${url}?clase_id=${idClase}`, {
+            const response = await fetchConSesion(`${url}?clase_id=${idClase}`, {
                 method: 'DELETE',
             })
             if (!response.ok) {

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import API_BASE_URL from '../config'
-import { obtenerUsuario } from '../sesion'
+import { obtenerUsuario, obtenerToken, fetchConSesion } from '../sesion'
 import PaginaPublica from '../components/PaginaPublica'
 import Tarjeta from '../components/Tarjeta'
 import Boton from '../components/Boton'
@@ -17,7 +17,7 @@ export default function Asistencia() {
     useEffect(() => {
         const registrarAsistencia = async (idClase, emailEstudiante) => {
             try {
-                const response = await fetch(rutaAsistencia, {
+                const response = await fetchConSesion(rutaAsistencia, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -25,6 +25,11 @@ export default function Asistencia() {
                         'email_estudiante': emailEstudiante
                     })
                 })
+
+                // Con 401 fetchConSesion ya llevó al login: conservamos la clase
+                // guardada para registrar la asistencia al volver a iniciar sesión
+                if (response.status === 401) return
+                localStorage.removeItem('idClase')
 
                 if (response.ok) {
                     setEstado('exito')
@@ -34,6 +39,7 @@ export default function Asistencia() {
                 }
             } catch (error) {
                 console.error('Error:', error)
+                localStorage.removeItem('idClase')
                 setEstado('error')
             }
         }
@@ -42,8 +48,10 @@ export default function Asistencia() {
         intentoRef.current = true
 
         const idClase = searchParams.get('clase_id')
-        if (!usuario) {
-            localStorage.setItem('idClase', idClase)
+        // Guardamos la clase por si hay que iniciar sesión antes de registrar
+        // (sin sesión o con la sesión vencida); Login la retoma al terminar
+        localStorage.setItem('idClase', idClase)
+        if (!usuario || !obtenerToken()) {
             navigate('/login')
             return
         }
