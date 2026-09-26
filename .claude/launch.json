@@ -4,14 +4,35 @@
     {
       "name": "front",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "front", "run", "dev"],
+      "runtimeArgs": [
+        "--prefix",
+        "front",
+        "run",
+        "dev"
+      ],
       "port": 5173
     },
     {
       "name": "back",
       "runtimeExecutable": "back/venv/Scripts/python.exe",
-      "runtimeArgs": ["-m", "uvicorn", "app.main:app", "--app-dir", "back", "--port", "8000"],
+      "runtimeArgs": [
+        "-m",
+        "uvicorn",
+        "app.main:app",
+        "--app-dir",
+        "back",
+        "--port",
+        "8000"
+      ],
       "port": 8000
+    },
+    {
+      "name": "back-e2e",
+      "runtimeExecutable": "back/venv/Scripts/python.exe",
+      "runtimeArgs": [
+        "back/tests/servidor_e2e.py"
+      ],
+      "port": 8001
     }
   ]
 }
