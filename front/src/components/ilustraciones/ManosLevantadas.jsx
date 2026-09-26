@@ -30,22 +30,30 @@ function PiezasMano() {
 
 export default function ManosLevantadas({ className = '' }) {
     return (
-        <svg viewBox='0 0 400 320' className={className} role='img' aria-label='Estudiantes levantando la mano en clase'>
-            <ellipse cx='200' cy='175' rx='175' ry='135' fill='var(--superficie-alt)' />
+        <svg viewBox='0 0 400 300' className={className} role='img' aria-label='Estudiantes levantando la mano en clase'>
+            <defs>
+                {/* Todo lo que queda por debajo del pupitre se recorta */}
+                <clipPath id='manos-sobre-pupitre'>
+                    <rect x='0' y='0' width='400' height='290' />
+                </clipPath>
+            </defs>
 
-            {MANOS.map(({ x, y, giro, escala }, i) => (
-                <g key={i} transform={`translate(${x} ${y}) rotate(${giro}) scale(${escala})`}>
-                    <g fill='var(--texto)' stroke='var(--texto)' strokeWidth='6' strokeLinejoin='round'>
-                        <PiezasMano />
-                    </g>
-                    <g fill='var(--superficie)'>
-                        <PiezasMano />
-                    </g>
-                </g>
-            ))}
+            <g clipPath='url(#manos-sobre-pupitre)'>
+                <ellipse cx='200' cy='175' rx='175' ry='135' fill='var(--superficie-alt)' />
 
-            {/* Línea del pupitre que corta los brazos */}
-            <rect x='20' y='290' width='360' height='30' fill='var(--fondo)' />
+                {MANOS.map(({ x, y, giro, escala }, i) => (
+                    <g key={i} transform={`translate(${x} ${y}) rotate(${giro}) scale(${escala})`}>
+                        <g fill='var(--texto)' stroke='var(--texto)' strokeWidth='6' strokeLinejoin='round'>
+                            <PiezasMano />
+                        </g>
+                        <g fill='var(--superficie)'>
+                            <PiezasMano />
+                        </g>
+                    </g>
+                ))}
+            </g>
+
+            {/* Línea del pupitre */}
             <line x1='30' y1='290' x2='370' y2='290' stroke='var(--texto)' strokeWidth='4' strokeLinecap='round' />
         </svg>
     )

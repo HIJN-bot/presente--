@@ -3,7 +3,7 @@ import BotonTema from './BotonTema'
 // Header común de todas las páginas: hamburguesa, título centrado y tema
 export default function Header({ titulo, onMenu, menuAbierto = false }) {
     return (
-        <header className='sticky top-0 z-30 grid h-16 grid-cols-[auto_1fr_auto] items-center gap-2 border-b border-borde bg-superficie px-3 sm:px-6'>
+        <header className='sticky top-0 z-30 grid h-16 grid-cols-[auto_1fr_auto] items-center gap-2 border-b border-borde bg-fondo px-3 sm:px-6'>
             <button
                 type='button'
                 onClick={onMenu}

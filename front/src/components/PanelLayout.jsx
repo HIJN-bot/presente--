@@ -61,7 +61,7 @@ export default function PanelLayout({ titulo, nombre, secciones, seccionActiva, 
 
             <div className='flex'>
                 {esEscritorio && !sidebarOculta && (
-                    <aside className='sticky top-16 flex h-[calc(100dvh-4rem)] w-64 shrink-0 flex-col gap-6 overflow-y-auto border-r border-borde bg-superficie p-5'>
+                    <aside className='sticky top-16 flex h-[calc(100dvh-4rem)] w-64 shrink-0 flex-col gap-6 overflow-y-auto border-r border-borde bg-superficie/60 p-5 backdrop-blur'>
                         {navegacion}
                     </aside>
                 )}

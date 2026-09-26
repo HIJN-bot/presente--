@@ -6,17 +6,20 @@
 
 /* Tokens de color. Los componentes solo usan estos nombres (bg-fondo,
    text-texto, border-borde...), así que la paleta se cambia únicamente aquí.
-   Valores provisionales en escala de grises hasta definir la paleta final. */
+   El fondo de la página es un degradado vertical: empieza en el color
+   principal del tema (--fondo: blanco o negro) y termina en morado
+   (--fondo-final). El acento y los bordes van en la misma gama de morados. */
 :root {
   color-scheme: light;
-  --fondo: #f4f4f5;
+  --fondo: #ffffff;
+  --fondo-final: #c4b5fd;
   --superficie: #ffffff;
-  --superficie-alt: #e4e4e7;
-  --texto: #18181b;
-  --texto-suave: #52525b;
-  --borde: #d4d4d8;
-  --acento: #27272a;
-  --acento-hover: #3f3f46;
+  --superficie-alt: #f3effe;
+  --texto: #120f1a;
+  --texto-suave: #4b4760;
+  --borde: #ddd6fe;
+  --acento: #6d28d9;
+  --acento-hover: #5b21b6;
   --acento-texto: #ffffff;
   --peligro: #b91c1c;
   --peligro-hover: #991b1b;
@@ -25,15 +28,16 @@
 
 .dark {
   color-scheme: dark;
-  --fondo: #09090b;
-  --superficie: #18181b;
-  --superficie-alt: #27272a;
-  --texto: #fafafa;
-  --texto-suave: #a1a1aa;
-  --borde: #3f3f46;
-  --acento: #e4e4e7;
-  --acento-hover: #ffffff;
-  --acento-texto: #18181b;
+  --fondo: #000000;
+  --fondo-final: #4c1d95;
+  --superficie: #0f0d17;
+  --superficie-alt: #1d1830;
+  --texto: #f5f3ff;
+  --texto-suave: #b4aecb;
+  --borde: #2e2649;
+  --acento: #a78bfa;
+  --acento-hover: #c4b5fd;
+  --acento-texto: #14101f;
   --peligro: #f87171;
   --peligro-hover: #fca5a5;
   --exito: #4ade80;
@@ -41,6 +45,7 @@
 
 @theme inline {
   --color-fondo: var(--fondo);
+  --color-fondo-final: var(--fondo-final);
   --color-superficie: var(--superficie);
   --color-superficie-alt: var(--superficie-alt);
   --color-texto: var(--texto);
@@ -60,7 +65,15 @@
 }
 
 @layer base {
+  /* html ocupa al menos toda la ventana para que el degradado llegue al final
+     aunque la página sea corta; en páginas largas se estira con el contenido. */
+  html {
+    min-height: 100%;
+  }
+
   body {
-    @apply bg-fondo text-texto font-sans antialiased;
+    @apply text-texto font-sans antialiased;
+    background-color: var(--fondo);
+    background-image: linear-gradient(to bottom, var(--fondo), var(--fondo-final));
   }
 }
