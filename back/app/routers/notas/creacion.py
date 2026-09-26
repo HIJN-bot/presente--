@@ -22,6 +22,9 @@ from app.models.notas.nota_model import Nota
 # Importamos get_db para crear las sesiones con la Base de datos
 from app.database import get_db
 
+# Importamos las dependencias de autenticacion (usuario del token y verificacion de dueño)
+from app.services.usuarios.usuario_actual import UsuarioActual, requerir_estudiante, verificar_propietario
+
 # Instanciamos el router
 router: APIRouter = APIRouter()
 
@@ -32,6 +35,7 @@ async def crear_nota(
     informacion_nota: NotaCreada,
     email_estudiante: EmailStr,
     db: Session = Depends(get_db),
+    usuario: UsuarioActual = Depends(requerir_estudiante),
 ):
     """
     Esta funcion se encarga de guardar una nota personal del estudiante:
@@ -41,6 +45,8 @@ async def crear_nota(
     - Retornamos la nota creada
     """
     try:
+        # Verificamos que el estudiante de la peticion sea el usuario del token
+        verificar_propietario(email_estudiante, usuario)
         # Creamos la consulta para obtener el estudiante de la base de datos
         query = select(Estudiante).where(Estudiante.email == email_estudiante)
         # Ejecutamos la consulta

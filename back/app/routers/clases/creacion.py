@@ -35,6 +35,9 @@ from app.models.clases.clase_model import Clase
 # Importamos get_db para crear las sesiones con la Base de datos
 from app.database import get_db
 
+# Importamos las dependencias de autenticacion (usuario del token y verificacion de dueño)
+from app.services.usuarios.usuario_actual import UsuarioActual, requerir_docente, verificar_propietario
+
 # Instanciaos el router
 router: APIRouter = APIRouter()
 
@@ -45,6 +48,7 @@ async def crear_clase(
     informacion_clase: ClaseCreada,
     email_docente: EmailStr,
     db: Session = Depends(get_db),
+    usuario: UsuarioActual = Depends(requerir_docente),
 ):
     """
     Esta funcion del endpoint se encarga de crear una clase y registrarla en la base de datos:
@@ -58,6 +62,8 @@ async def crear_clase(
     - Retornamos la instancia de clase que acabamos de crear
     """
     try:
+        # Verificamos que el docente de la peticion sea el usuario del token
+        verificar_propietario(email_docente, usuario)
         # Instanciamos el ManagerQr
         manager_qr: ManagerQr = ManagerQr()
         # Creamos la consulta para obtener el docente de la base de datos

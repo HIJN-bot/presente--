@@ -10,6 +10,9 @@ from sqlalchemy import select
 # Importamos de database la funcion get_db
 from app.database import get_db
 
+# Importamos las dependencias de autenticacion (usuario del token y verificacion de dueño)
+from app.services.usuarios.usuario_actual import UsuarioActual, requerir_estudiante, verificar_propietario
+
 # Importamos de pydantic EmailStr para typehints
 from pydantic import EmailStr
 
@@ -29,7 +32,9 @@ router: APIRouter = APIRouter()
 # Declaramos el metodo HTTP y la funcion del endpoint
 @router.post("/asistencia/registro", status_code=201)
 async def registrar_asistencia(
-    input_asistencia: InputAsistencia, db: Session = Depends(get_db)
+    input_asistencia: InputAsistencia,
+    db: Session = Depends(get_db),
+    usuario: UsuarioActual = Depends(requerir_estudiante),
 ):
     """
     Esta funcion se encarga de registrar la asistencia del estudiante en la clase:
@@ -43,6 +48,8 @@ async def registrar_asistencia(
         id_clase = input_asistencia.id_clase
         #Definimos el email del estudiante
         email_estudiante = input_asistencia.email_estudiante
+        # Un estudiante solo puede registrar su propia asistencia
+        verificar_propietario(email_estudiante, usuario)
         # Definimos la consulta de la clase
         query_clase = select(Clase).where(Clase.id == id_clase)
         # Definimos la consulta del estudiante

@@ -10,6 +10,9 @@ from sqlalchemy import select
 # Importamos la funcion get_db para la base de datos
 from app.database import get_db
 
+# Importamos las dependencias de autenticacion (usuario del token y verificacion de dueño)
+from app.services.usuarios.usuario_actual import UsuarioActual, requerir_docente, verificar_propietario
+
 # Importamos el modelo de la clase
 from app.models.clases.clase_model import Clase
 
@@ -19,7 +22,11 @@ router = APIRouter()
 
 # Definimos el endpoint
 @router.delete("/clases/eliminar", status_code=200)
-async def eliminar_clase(clase_id: int, db: Session = Depends(get_db)):
+async def eliminar_clase(
+    clase_id: int,
+    db: Session = Depends(get_db),
+    usuario: UsuarioActual = Depends(requerir_docente),
+):
     """
     La funcion eliminar_clase se encarga de borrar el registro de una clase en la base de datos:
     - Recibe el id de la clase
@@ -35,6 +42,8 @@ async def eliminar_clase(clase_id: int, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=404, detail="La clase que intenta borrar no existe"
         )
+    # Verificamos que la clase pertenezca al docente del token
+    verificar_propietario(clase_db.docente.email if clase_db.docente else "", usuario)
     # Eliminamos la clase de la base de datos
     db.delete(clase_db)
     # Comprometemos los cambios

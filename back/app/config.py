@@ -107,3 +107,17 @@ ALLOWED_ORIGIN_REGEX = opcional("ALLOWED_ORIGIN_REGEX") or None
 
 # Entorno de ejecucion, util para condicionar comportamiento de desarrollo o produccion.
 ENV = opcional("ENV", "development")
+
+# Clave con la que se firman los tokens de sesion (JWT). Obligatoria y secreta:
+# quien la conozca puede fabricar tokens validos para cualquier usuario.
+# Generala con: python -c "import secrets; print(secrets.token_urlsafe(48))"
+SECRET_KEY = requerir("SECRET_KEY")
+
+if len(SECRET_KEY) < 32:
+    logger.warning(
+        "SECRET_KEY tiene menos de 32 caracteres. Usa una clave larga y aleatoria "
+        "para que los tokens de sesion no se puedan adivinar."
+    )
+
+# Horas que dura un token de sesion antes de que el usuario deba iniciar sesion de nuevo.
+TOKEN_EXPIRACION_HORAS = int(opcional("TOKEN_EXPIRACION_HORAS", "12"))

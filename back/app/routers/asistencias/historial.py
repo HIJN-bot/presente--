@@ -13,6 +13,9 @@ from pydantic import EmailStr
 # Importamos de database la funcion get_db
 from app.database import get_db
 
+# Importamos las dependencias de autenticacion (usuario del token y verificacion de dueño)
+from app.services.usuarios.usuario_actual import UsuarioActual, requerir_estudiante, verificar_propietario
+
 # Importamos el modelo de la clase para que se registre la relacion Estudiante.clases
 from app.models.clases.clase_model import Clase  # noqa: F401
 
@@ -25,7 +28,11 @@ router: APIRouter = APIRouter()
 
 # Definimos el endpoint con el metodo HTTP y la funcion
 @router.get("/asistencia/historial", status_code=200)
-async def consultar_historial(email_estudiante: EmailStr, db: Session = Depends(get_db)):
+async def consultar_historial(
+    email_estudiante: EmailStr,
+    db: Session = Depends(get_db),
+    usuario: UsuarioActual = Depends(requerir_estudiante),
+):
     """
     Esta funcion se encarga de consultar las clases en las que un estudiante registro asistencia:
     - Consultamos el estudiante mediante su email
@@ -33,6 +40,8 @@ async def consultar_historial(email_estudiante: EmailStr, db: Session = Depends(
     - Retornamos las clases, de la mas reciente a la mas antigua
     """
     try:
+        # Verificamos que el estudiante de la peticion sea el usuario del token
+        verificar_propietario(email_estudiante, usuario)
         # Definimos la consulta del estudiante
         query = select(Estudiante).where(Estudiante.email == email_estudiante)
         # Ejecutamos la consulta

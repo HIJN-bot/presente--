@@ -16,6 +16,9 @@ from app.models.usuarios.docente_model import Docente
 # Importamos get_db para crear las sesiones con la Base de datos
 from app.database import get_db
 
+# Importamos las dependencias de autenticacion (usuario del token y verificacion de dueño)
+from app.services.usuarios.usuario_actual import UsuarioActual, requerir_docente, verificar_propietario
+
 # Instanciamos el router del endpoint
 router: APIRouter = APIRouter()
 
@@ -23,7 +26,9 @@ router: APIRouter = APIRouter()
 # Declaramos el decorador de la funcion del endpoint con su status code
 @router.get("/clases/consultar", status_code=200)
 async def consultar_clase(
-    email_docente: EmailStr, db: Session = Depends(get_db)
+    email_docente: EmailStr,
+    db: Session = Depends(get_db),
+    usuario: UsuarioActual = Depends(requerir_docente),
 ):
     """
     Esta funcion se encarga de consultar las clases que tiene un docente:
@@ -35,6 +40,8 @@ async def consultar_clase(
     - Retornamos la lista de las clases
     """
     try:
+        # Verificamos que el docente de la peticion sea el usuario del token
+        verificar_propietario(email_docente, usuario)
         # Creamos la estructura de la consulta
         query = select(Docente).where(Docente.email == email_docente)
         # Ejecutamos la consulta

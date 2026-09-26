@@ -19,13 +19,20 @@ from app.models.notas.nota_model import Nota
 # Importamos get_db para crear las sesiones con la Base de datos
 from app.database import get_db
 
+# Importamos las dependencias de autenticacion (usuario del token y verificacion de dueño)
+from app.services.usuarios.usuario_actual import UsuarioActual, requerir_estudiante, verificar_propietario
+
 # Instanciamos el router del endpoint
 router: APIRouter = APIRouter()
 
 
 # Declaramos el decorador de la funcion del endpoint con su status code
 @router.get("/notas/consultar", status_code=200)
-async def consultar_notas(email_estudiante: EmailStr, db: Session = Depends(get_db)):
+async def consultar_notas(
+    email_estudiante: EmailStr,
+    db: Session = Depends(get_db),
+    usuario: UsuarioActual = Depends(requerir_estudiante),
+):
     """
     Esta funcion se encarga de consultar las notas personales de un estudiante:
     - Consultamos el estudiante mediante su email
@@ -33,6 +40,8 @@ async def consultar_notas(email_estudiante: EmailStr, db: Session = Depends(get_
     - Retornamos la lista de notas
     """
     try:
+        # Verificamos que el estudiante de la peticion sea el usuario del token
+        verificar_propietario(email_estudiante, usuario)
         # Creamos la consulta para obtener el estudiante
         query_estudiante = select(Estudiante).where(Estudiante.email == email_estudiante)
         # Ejecutamos la consulta
