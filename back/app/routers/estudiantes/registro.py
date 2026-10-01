@@ -70,7 +70,7 @@ async def registrar_estudiante(
             apellido=estudiante.apellido,
             email=estudiante.email,
         )
-        # Retornar el estudiante creado y un token opaco para la sesión del Front
+        # Retornar el estudiante creado y su token de sesión (JWT firmado)
         return {
             "token": generar_token("student", estudiante.email),
             "role": "student",

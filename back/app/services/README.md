@@ -28,7 +28,15 @@ El QR generado apunta a `{FRONTEND_BASE_URL}/asistencia?clase_id={id}`, que es l
 Funciones de autenticación:
 - `generar_hash(contrasena)` — hashea una contraseña con bcrypt
 - `verificar_hash(contrasena, hash_guardado)` — compara contraseña plana contra hash almacenado
-- `generar_token(rol, email)` — genera un token opaco de sesión (`rol.email.token_aleatorio`)
+- `generar_token(rol, email)` — genera el token de sesión: un JWT firmado con `SECRET_KEY` (HS256) con el email (`sub`), el rol y la expiración (`exp`)
+- `decodificar_token(token)` — verifica firma y expiración y retorna el contenido; lanza `jwt.InvalidTokenError` si no es válido
+
+### `usuarios/usuario_actual.py` 🛡️
+
+Dependencias de FastAPI para proteger endpoints:
+- `obtener_usuario_actual` — lee `Authorization: Bearer <token>` y retorna `UsuarioActual(email, rol)`; 401 si falta, fue alterado o expiró
+- `requerir_docente` / `requerir_estudiante` — además exigen el rol; 403 si no corresponde
+- `verificar_propietario(email, usuario)` — 403 si el email de la petición no es el del token
 
 ### `usuarios/crear_usuario.py`
 Lógica para crear un usuario nuevo (validación + hash + persistencia).

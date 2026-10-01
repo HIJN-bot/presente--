@@ -15,6 +15,8 @@ const MENSAJES = {
     'email:value_error': 'El correo electrónico no es válido',
     'nombre:string_too_short': 'El nombre no puede estar vacío',
     'apellido:string_too_short': 'El apellido no puede estar vacío',
+    'contenido:string_too_short': 'La nota no puede estar vacía',
+    'contenido:string_too_long': 'La nota no puede superar los 500 caracteres',
 }
 
 export async function leerMensajeDeError(respuesta) {

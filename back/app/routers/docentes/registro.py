@@ -75,7 +75,7 @@ async def registrar_docente(
             apellido=docente.apellido,
             email=docente.email,
         )
-        # Retornamos el docente creado y un token opaco para la sesión del Front
+        # Retornamos el docente creado y su token de sesión (JWT firmado)
         return {
             "token": generar_token("teacher", docente.email),
             "role": "teacher",

@@ -5,6 +5,25 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Presente - Sistema de Asistencia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    />
+    <script>
+      // Aplicamos el tema antes de que React renderice para evitar el parpadeo
+      // del modo claro al recargar. La misma lógica vive en src/hooks/useTema.js.
+      try {
+        const tema = localStorage.getItem('tema');
+        const oscuro = tema
+          ? tema === 'oscuro'
+          : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (oscuro) document.documentElement.classList.add('dark');
+      } catch (err) {
+        // Sin acceso a localStorage: se queda en modo claro.
+      }
+    </script>
     <script>
       // Cargamos la configuración de runtime que genera entrypoint.sh dentro del
       // contenedor de nginx (sincrónico, antes de que arranque la app).

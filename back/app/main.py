@@ -38,6 +38,15 @@ from app.routers.asistencias import registrar as registrar_asistencia
 # Importamos el router de la consulta a la asistencia de la clase
 from app.routers.asistencias import consultar as consultar_asistencia
 
+# Importamos el router del historial de asistencia del estudiante
+from app.routers.asistencias import historial as historial_asistencia
+
+# Importamos el router de creacion de notas del estudiante
+from app.routers.notas import creacion as creacion_nota
+
+# Importamos el router de la consulta de notas del estudiante
+from app.routers.notas import consultar as consultar_notas
+
 # instanciamos la aplicacion de FastAPI
 app: FastAPI = FastAPI(
     title="Presente", description="Sistema de registro por QR", version="0.1.0"
@@ -72,6 +81,10 @@ app.include_router(enviar_qr.router, prefix="/api", tags=["qr"])
 # Montamos los routers de la asistencia en la aplicacion
 app.include_router(registrar_asistencia.router, prefix="/api", tags=["asistencia"])
 app.include_router(consultar_asistencia.router, prefix="/api", tags=["asistencia"])
+app.include_router(historial_asistencia.router, prefix="/api", tags=["asistencia"])
+# Montamos los routers de las notas del estudiante en la aplicacion
+app.include_router(creacion_nota.router, prefix="/api", tags=["notas"])
+app.include_router(consultar_notas.router, prefix="/api", tags=["notas"])
 
 
 # Funcion principal de la aplicacion

@@ -39,6 +39,13 @@ id_clase: int
 email_estudiante: str
 ```
 
+### `notas/nota_schema.py`
+
+**`NotaCreada`** — body de entrada para crear una nota:
+```python
+contenido: str   # se recortan los espacios; de 1 a 500 caracteres
+```
+
 ### `usuarios/docente_schema.py`
 Schemas para registro y respuesta de docentes.
 

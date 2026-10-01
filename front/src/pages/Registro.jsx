@@ -3,6 +3,12 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import API_BASE_URL from '../config'
 import { leerMensajeDeError } from '../errores'
+import PaginaPublica from '../components/PaginaPublica'
+import Tarjeta from '../components/Tarjeta'
+import CampoTexto from '../components/CampoTexto'
+import SelectorRol from '../components/SelectorRol'
+import Boton from '../components/Boton'
+import Aviso from '../components/Aviso'
 
 export default function Registro() {
     const navigate = useNavigate()
@@ -83,131 +89,80 @@ export default function Registro() {
         }
     }
     return (
-        <div className='min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-900'>
-            {/*Header de la pagina, contiene el boton para regresar al menu principal y el titulo*/}
-            <header className='flex justify-between items-center px-8 py-6 border-b border-slate-700'>
-                <h1 className='text-4xl font-bold text-white'>
-                    Registro
-                    <span className='text-teal-400 ml-2'></span>
-                </h1>
-                <Link to='/'><button className='px-6 py-2 border-2 border-slate-600 text-slate-300 rounded-lg font-semibold hover:bg-slate-700 hover:border-slate-500 transition-all duration-300'>← Volver</button></Link>
-            </header>
-
+        <PaginaPublica>
             {/*Body: Contiene el formulario para el registro*/}
-            <section className='min-h-screen flex items-center justify-center px-4 py-12'>
-                <div className='w-full max-w-md'>
+            <main className='flex justify-center px-4 py-10 sm:py-16'>
+                <Tarjeta className='w-full max-w-md'>
                     {/* Titulo del formulario */}
-                    <div className='mb-8 text-center'>
-                        <h2 className='text-3xl font-bold text-white mb-2'>Crea tu Cuenta</h2>
-                        <p className='text-gray-400'>Únete a Presente y controla tu asistencia</p>
+                    <div className='mb-6 text-center'>
+                        <h2 className='font-display text-3xl font-bold'>Crea tu cuenta</h2>
+                        <p className='mt-2 text-texto-suave'>Únete a Presente y controla tu asistencia</p>
                     </div>
 
                     {/*Toggle Docente/Estudiante*/}
-                    <div className='flex gap-3 mb-8 bg-slate-800 p-2 rounded-lg border border-slate-700'>
-                        <button
-                            onClick={() => setEsDocente(false)}
-                            className={`flex-1 py-2 px-4 rounded-md font-semibold transition-all duration-300 ${!esDocente
-                                    ? 'bg-teal-500 text-white shadow-lg'
-                                    : 'text-gray-400 hover:text-white'
-                                }`}
-                        >
-                            Estudiante
-                        </button>
-                        <button
-                            onClick={() => setEsDocente(true)}
-                            className={`flex-1 py-2 px-4 rounded-md font-semibold transition-all duration-300 ${esDocente
-                                    ? 'bg-blue-600 text-white shadow-lg'
-                                    : 'text-gray-400 hover:text-white'
-                                }`}
-                        >
-                            Docente
-                        </button>
-                    </div>
-
-                    {/*Aviso de error: aparece solo cuando el registro falla*/}
-                    {error && (
-                        <div
-                            role='alert'
-                            className='mb-4 px-4 py-3 bg-red-900/40 border border-red-500/50 rounded-lg text-red-200 text-sm'
-                        >
-                            {error}
-                        </div>
-                    )}
+                    <SelectorRol esDocente={esDocente} onCambiar={setEsDocente} />
 
                     {/*Formulario de registro*/}
-                    <form onSubmit={handleSubmit} className='space-y-4'>
-                        {/* Nombre */}
-                        <div>
-                            <label className='block text-sm font-semibold text-gray-300 mb-2'>Nombre</label>
-                            <input
+                    <form onSubmit={handleSubmit} className='mt-6 flex flex-col gap-4'>
+                        {/*Aviso de error: aparece solo cuando el registro falla*/}
+                        <Aviso>{error}</Aviso>
+
+                        <div className='grid gap-4 sm:grid-cols-2'>
+                            <CampoTexto
+                                etiqueta='Nombre'
                                 type='text'
                                 value={nombre}
                                 onChange={(e) => setNombre(e.target.value)}
                                 placeholder='Tu nombre'
+                                autoComplete='given-name'
                                 required
-                                className='w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:ring-opacity-20 transition-all'
                             />
-                        </div>
-
-                        {/* Apellido */}
-                        <div>
-                            <label className='block text-sm font-semibold text-gray-300 mb-2'>Apellido</label>
-                            <input
+                            <CampoTexto
+                                etiqueta='Apellido'
                                 type='text'
                                 value={apellido}
                                 onChange={(e) => setApellido(e.target.value)}
                                 placeholder='Tu apellido'
+                                autoComplete='family-name'
                                 required
-                                className='w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:ring-opacity-20 transition-all'
                             />
                         </div>
 
-                        {/* Email */}
-                        <div>
-                            <label className='block text-sm font-semibold text-gray-300 mb-2'>Correo Electrónico</label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="tu@correo.com"
-                                required
-                                className='w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:ring-opacity-20 transition-all'
-                            />
-                        </div>
+                        <CampoTexto
+                            etiqueta='Correo electrónico'
+                            type='email'
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder='tu@correo.com'
+                            autoComplete='email'
+                            required
+                        />
 
-                        {/* Contraseña */}
-                        <div>
-                            <label className='block text-sm font-semibold text-gray-300 mb-2'>Contraseña</label>
-                            <input
-                                type="password"
-                                value={contrasena}
-                                onChange={(e) => setContrasena(e.target.value)}
-                                placeholder="••••••••"
-                                required
-                                /* Mismos limites que valida el Back-End, para que el
-                                   navegador avise antes de enviar el formulario */
-                                minLength={8}
-                                maxLength={72}
-                                className='w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500 focus:ring-opacity-20 transition-all'
-                            />
-                            <p className='mt-2 text-xs text-gray-500'>Mínimo 8 caracteres</p>
-                        </div>
+                        {/* Mismos limites que valida el Back-End, para que el
+                            navegador avise antes de enviar el formulario */}
+                        <CampoTexto
+                            etiqueta='Contraseña'
+                            type='password'
+                            value={contrasena}
+                            onChange={(e) => setContrasena(e.target.value)}
+                            placeholder='••••••••'
+                            autoComplete='new-password'
+                            required
+                            minLength={8}
+                            maxLength={72}
+                            ayuda='Mínimo 8 caracteres'
+                        />
 
                         {/* Boton de envio del formulario */}
-                        <button
-                            type='submit'
-                            className='w-full py-3 mt-6 bg-linear-to-r from-teal-500 to-teal-600 text-white font-bold rounded-lg hover:from-teal-600 hover:to-teal-700 transition-all duration-300 shadow-lg hover:shadow-xl'
-                        >
-                            Crear Cuenta
-                        </button>
+                        <Boton type='submit' className='mt-2 w-full py-3'>Crear cuenta</Boton>
 
                         {/* Link a login */}
-                        <p className='text-center text-gray-400 text-sm mt-4'>
-                            ¿Ya tienes cuenta? <Link to='/login' className='text-teal-400 hover:text-teal-300 font-semibold'>Inicia sesión aquí</Link>
+                        <p className='text-center text-sm text-texto-suave'>
+                            ¿Ya tienes cuenta? <Link to='/login' className='font-semibold text-texto underline underline-offset-4'>Inicia sesión aquí</Link>
                         </p>
                     </form>
-                </div>
-            </section>
-        </div>
+                </Tarjeta>
+            </main>
+        </PaginaPublica>
     )
 }

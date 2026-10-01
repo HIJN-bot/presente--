@@ -5,6 +5,24 @@ Documentación interactiva: `<base-url>/docs` (generada automáticamente por Fas
 
 ---
 
+## Autenticación
+
+El login y el registro devuelven un `token` (JWT firmado, válido por `TOKEN_EXPIRACION_HORAS`,
+12 h por defecto). El resto de endpoints lo exigen en la cabecera:
+
+```
+Authorization: Bearer <token>
+```
+
+- **401** — falta el token, fue alterado o expiró. El Front borra la sesión y lleva al login.
+- **403** — el token es válido pero el rol no corresponde (docente/estudiante) o los datos
+  pedidos son de otro usuario. Los parámetros `email_docente` / `email_estudiante` deben
+  coincidir con el usuario del token, y las clases solo las gestiona su docente.
+
+Endpoints públicos (sin token): registro y login de docentes y estudiantes, y `GET /`.
+
+---
+
 ## Estudiantes
 
 ### Registro
@@ -122,6 +140,42 @@ POST /api/asistencias/registrar
 GET /api/asistencias/consultar?id_clase=<id>&email_docente=<email>
 ```
 Retorna la lista de estudiantes que registraron asistencia en la clase.
+
+### Historial de asistencia del estudiante
+```
+GET /api/asistencia/historial?email_estudiante=<email>
+```
+Retorna las clases en las que el estudiante registró asistencia, de la más reciente a la más antigua.
+
+**Respuesta:**
+```json
+[{ "id": 1, "materia": "string", "horario": "datetime", "docente": "string" }]
+```
+
+---
+
+## Notas del estudiante
+
+Notas personales y privadas: solo se consultan con el email de su autor.
+
+### Crear nota
+```
+POST /api/notas/creacion?email_estudiante=<email>
+```
+**Body:**
+```json
+{ "contenido": "string (1 a 500 caracteres, sin espacios en los extremos)" }
+```
+**Respuesta (201):**
+```json
+{ "id": 1, "contenido": "string", "fecha": "datetime con zona horaria" }
+```
+
+### Consultar notas
+```
+GET /api/notas/consultar?email_estudiante=<email>
+```
+Retorna las notas del estudiante, de la más reciente a la más antigua, con el mismo formato que la creación.
 
 ---
 

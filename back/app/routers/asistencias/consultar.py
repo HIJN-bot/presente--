@@ -10,6 +10,9 @@ from sqlalchemy import select
 # Importamos de database la funcion get_db
 from app.database import get_db
 
+# Importamos las dependencias de autenticacion (usuario del token y verificacion de dueño)
+from app.services.usuarios.usuario_actual import UsuarioActual, requerir_docente, verificar_propietario
+
 # Importamos el modelo de la clase
 from app.models.clases.clase_model import Clase
 
@@ -19,7 +22,11 @@ router: APIRouter = APIRouter()
 
 # Definimos el endpoint con el metodo HTTP y la funcion
 @router.get("/asistencia/consulta", status_code=200)
-async def consultar_registro(id_clase: int, db: Session = Depends(get_db)):
+async def consultar_registro(
+    id_clase: int,
+    db: Session = Depends(get_db),
+    usuario: UsuarioActual = Depends(requerir_docente),
+):
     """
     Esta funcion se encarga de consultar los estudiantes que registraron asistencia en una clase:
     - Preparamos la consulta a la clase que se solicita
@@ -37,6 +44,8 @@ async def consultar_registro(id_clase: int, db: Session = Depends(get_db)):
             raise HTTPException(
                 status_code=404, detail="No se encontro la clase que esta consultando"
             )
+        # Solo el docente dueño de la clase puede ver su asistencia
+        verificar_propietario(clase.docente.email if clase.docente else "", usuario)
         # Retornamos la lista de los estudiantes en formato serializable
         return {
             "id_clase": clase.id,

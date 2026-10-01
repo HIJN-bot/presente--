@@ -8,8 +8,8 @@ El proyecto está desplegado en [Render.com](https://render.com) con dos servici
 
 | Servicio | Tipo | Dockerfile | URL |
 |---------|------|-----------|-----|
-| Backend | Web Service (Docker) | `Dockerfile.backend` | `https://presente-backend-<sufijo>.onrender.com` |
-| Frontend | Web Service (Docker) | `Dockerfile.frontend` | `https://presente-frontend-<sufijo>.onrender.com` |
+| Backend | Web Service (Docker) | `back/Dockerfile` | `https://presente-backend-<sufijo>.onrender.com` |
+| Frontend | Web Service (Docker) | `front/Dockerfile` | `https://presente-frontend-<sufijo>.onrender.com` |
 | Base de datos | PostgreSQL | — | Interna a Render |
 
 > El frontend **no** es un Static Site: se sirve con nginx dentro de un contenedor,
@@ -40,13 +40,19 @@ que sí escribe un `.env` en disco. No hace falta para este proyecto.
 |---|---|---|
 | `DATABASE_URL` | La enlaza Render desde la base de datos | **No arranca** |
 | `FRONTEND_BASE_URL` | `https://presente-frontend-<sufijo>.onrender.com` | **No arranca** |
+| `SECRET_KEY` | Clave larga y aleatoria para firmar los tokens de sesión (JWT). Genérala con `python -c "import secrets; print(secrets.token_urlsafe(48))"` | **No arranca** |
+| `TOKEN_EXPIRACION_HORAS` | (opcional) horas que dura una sesión | Usa `12` |
 | `ALLOWED_ORIGIN_REGEX` | `https?://.*\.onrender\.com` | Arranca, pero **el CORS bloquea al frontend** |
 | `ALLOWED_ORIGINS` | (opcional) orígenes exactos separados por comas | Usa los de localhost |
 | `ENV` | `production` | Asume `development` |
 
-`DATABASE_URL` y `FRONTEND_BASE_URL` son obligatorias a propósito: `app/config.py` aborta
+`DATABASE_URL`, `FRONTEND_BASE_URL` y `SECRET_KEY` son obligatorias a propósito: `app/config.py` aborta
 el arranque con un mensaje explícito si faltan, en lugar de apuntar en silencio al
 sitio equivocado.
+
+`SECRET_KEY` debe ser distinta en cada entorno y nunca subirse al repositorio: quien la
+conozca puede fabricar sesiones válidas para cualquier usuario. Si se cambia, todas las
+sesiones abiertas se invalidan y los usuarios deben iniciar sesión de nuevo.
 
 ### Frontend (Web Service)
 
@@ -67,13 +73,13 @@ hacía que un frontend mal configurado apuntara silenciosamente al backend equiv
 
 ### Backend
 - **Environment**: Docker
-- **Dockerfile Path**: `Dockerfile.backend`
+- **Dockerfile Path**: `back/Dockerfile`
 - **Puerto**: `8000`
 - **Health check**: `GET /`
 
 ### Frontend
 - **Environment**: Docker
-- **Dockerfile Path**: `Dockerfile.frontend`
+- **Dockerfile Path**: `front/Dockerfile`
 - **Puerto**: `80`
 
 ---

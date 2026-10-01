@@ -1,1 +1,79 @@
 @import "tailwindcss";
+
+/* El modo oscuro se activa con la clase .dark en <html> (la aplica useTema
+   y el script de index.html), no con la preferencia del sistema. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Tokens de color. Los componentes solo usan estos nombres (bg-fondo,
+   text-texto, border-borde...), así que la paleta se cambia únicamente aquí.
+   El fondo de la página es un degradado vertical: empieza en el color
+   principal del tema (--fondo: blanco o negro) y termina en morado
+   (--fondo-final). El acento y los bordes van en la misma gama de morados. */
+:root {
+  color-scheme: light;
+  --fondo: #ffffff;
+  --fondo-final: #c4b5fd;
+  --superficie: #ffffff;
+  --superficie-alt: #f3effe;
+  --texto: #120f1a;
+  --texto-suave: #4b4760;
+  --borde: #ddd6fe;
+  --acento: #6d28d9;
+  --acento-hover: #5b21b6;
+  --acento-texto: #ffffff;
+  --peligro: #b91c1c;
+  --peligro-hover: #991b1b;
+  --exito: #15803d;
+}
+
+.dark {
+  color-scheme: dark;
+  --fondo: #000000;
+  --fondo-final: #4c1d95;
+  --superficie: #0f0d17;
+  --superficie-alt: #1d1830;
+  --texto: #f5f3ff;
+  --texto-suave: #b4aecb;
+  --borde: #2e2649;
+  --acento: #a78bfa;
+  --acento-hover: #c4b5fd;
+  --acento-texto: #14101f;
+  --peligro: #f87171;
+  --peligro-hover: #fca5a5;
+  --exito: #4ade80;
+}
+
+@theme inline {
+  --color-fondo: var(--fondo);
+  --color-fondo-final: var(--fondo-final);
+  --color-superficie: var(--superficie);
+  --color-superficie-alt: var(--superficie-alt);
+  --color-texto: var(--texto);
+  --color-texto-suave: var(--texto-suave);
+  --color-borde: var(--borde);
+  --color-acento: var(--acento);
+  --color-acento-hover: var(--acento-hover);
+  --color-acento-texto: var(--acento-texto);
+  --color-peligro: var(--peligro);
+  --color-peligro-hover: var(--peligro-hover);
+  --color-exito: var(--exito);
+}
+
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  /* html ocupa al menos toda la ventana para que el degradado llegue al final
+     aunque la página sea corta; en páginas largas se estira con el contenido. */
+  html {
+    min-height: 100%;
+  }
+
+  body {
+    @apply text-texto font-sans antialiased;
+    background-color: var(--fondo);
+    background-image: linear-gradient(to bottom, var(--fondo), var(--fondo-final));
+  }
+}
