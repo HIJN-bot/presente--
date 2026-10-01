@@ -1,0 +1,22 @@
+# Archivos que no deben entrar al contexto de build del frontend (contexto: front/).
+# Docker solo lee el .dockerignore de la raiz del contexto, por eso vive aqui.
+# Critico: sin esto "COPY . ." mete tu node_modules local (binarios de otro sistema)
+# y tu .env.local, cuya URL Vite hornearia dentro del bundle de produccion.
+
+# ===== Secretos y configuracion local =====
+.env
+.env.*
+!.env.example
+
+# ===== Dependencias y artefactos (se generan dentro de la imagen) =====
+node_modules/
+dist/
+.vite/
+
+# ===== Bocetos y documentacion (la imagen no los necesita) =====
+designs/
+*.md
+
+# ===== Editor =====
+.vscode/
+.idea/

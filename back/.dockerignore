@@ -1,0 +1,27 @@
+# Archivos que no deben entrar al contexto de build del backend (contexto: back/).
+# Docker solo lee el .dockerignore de la raiz del contexto, por eso vive aqui.
+
+# ===== Secretos y configuracion local =====
+.env
+.env.*
+!.env.example
+
+# ===== Entorno virtual y caches de Python =====
+venv/
+env/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+
+# ===== Pruebas (la imagen no las necesita) =====
+tests/
+pytest.ini
+requirements-dev.txt
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ===== Documentacion y editor =====
+*.md
+.vscode/
+.idea/

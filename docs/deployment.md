@@ -71,16 +71,29 @@ hacía que un frontend mal configurado apuntara silenciosamente al backend equiv
 
 ## Configuración de los servicios
 
+Cada servicio se construye **desde su propia carpeta**: la carpeta es el contexto de build y
+las rutas de `COPY` de cada Dockerfile son relativas a ella. Por eso cada servicio tiene
+también su propio `.dockerignore` (Docker solo lee el de la raíz del contexto).
+
 ### Backend
 - **Environment**: Docker
-- **Dockerfile Path**: `back/Dockerfile`
+- **Root Directory**: `back`
+- **Dockerfile Path**: `Dockerfile` (es decir, `back/Dockerfile`)
 - **Puerto**: `8000`
 - **Health check**: `GET /`
 
 ### Frontend
 - **Environment**: Docker
-- **Dockerfile Path**: `front/Dockerfile`
+- **Root Directory**: `front`
+- **Dockerfile Path**: `Dockerfile` (es decir, `front/Dockerfile`)
 - **Puerto**: `80`
+
+Para construir en local, igual que en Render:
+
+```bash
+docker build -t presente-back back
+docker build -t presente-front front
+```
 
 ---
 

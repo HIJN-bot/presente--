@@ -1,3 +1,6 @@
+# Contexto de build: la carpeta back/ (Root Directory del servicio en Render).
+# Las rutas de COPY son relativas a esa carpeta.
+
 # Stage 1: Build
 FROM python:3.11-slim AS builder
 
@@ -10,7 +13,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies
-COPY back/requirements.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Runtime
@@ -28,10 +31,10 @@ COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/pytho
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application code
-COPY back/app ./app
-COPY back/alembic ./alembic
-COPY back/alembic.ini .
-COPY back/entrypoint.sh .
+COPY app ./app
+COPY alembic ./alembic
+COPY alembic.ini .
+COPY entrypoint.sh .
 
 # Make entrypoint executable
 RUN chmod +x entrypoint.sh
